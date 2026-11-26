@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 120" role="img" aria-label="Origem 68 — Portal de Notícias do Acre">
+  <defs>
+    <linearGradient id="g68" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FF5D0A"/>
+      <stop offset="1" stop-color="#F88F22"/>
+    </linearGradient>
+    <linearGradient id="gsw" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#FBB931"/>
+      <stop offset="1" stop-color="#FFE3B3"/>
+    </linearGradient>
+  </defs>
+  <text x="0" y="86" font-family="Outfit, Onest, Arial, sans-serif" font-weight="800" font-size="92" letter-spacing="-3" fill="#FFF6EA">ORIGEM</text>
+  <text x="352" y="86" font-family="Outfit, Onest, Arial, sans-serif" font-weight="800" font-size="104" letter-spacing="-6" fill="url(#g68)">68</text>
+  <path d="M352 92 C 390 104, 420 70, 452 58 S 500 50, 512 40 C 498 64, 470 72, 446 82 S 386 112, 352 92 Z" fill="url(#gsw)"/>
+</svg>

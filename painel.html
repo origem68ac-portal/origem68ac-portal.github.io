@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Painel da Redação — Origem 68</title>
+  <meta name="theme-color" content="#0D0806">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
+  <script src="assets/js/tema.js?v=3"></script>
+  <link rel="stylesheet" href="assets/css/style.css?v=6">
+  <style>
+    body { min-height: 100vh; }
+    .p-top { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 14px; height: 68px; padding: 0 clamp(16px, 3vw, 28px); border-bottom: 1px solid var(--line); background: rgba(var(--bgc), .85); backdrop-filter: blur(14px); }
+    .p-top .logo__mark { font-size: 24px; }
+    .p-top__title { font-size: 13px; color: var(--muted); padding-left: 14px; border-left: 1px solid var(--line-2); }
+    .p-top__right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+    .badge { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: 5px 10px; border-radius: 999px; background: rgba(251,185,49,.16); color: var(--hover); }
+    .badge--on { background: rgba(60,190,110,.16); color: #2fa865; }
+    .btn--sm { height: 38px; padding: 0 16px; font-size: 13.5px; }
+
+    .p-wrap { display: grid; grid-template-columns: 360px minmax(0, 1fr); min-height: calc(100vh - 68px); }
+    .p-list { border-right: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; }
+    .p-list__head { padding: 18px; display: grid; gap: 10px; border-bottom: 1px solid var(--line); }
+    .p-filters { display: flex; gap: 6px; flex-wrap: wrap; }
+    .p-filters button { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line-2); font-size: 13px; color: var(--muted); }
+    .p-filters button.is-on { background: var(--grad); color: var(--ink); border-color: transparent; font-weight: 600; }
+    .p-items { overflow-y: auto; flex: 1; }
+    .p-item { display: block; width: 100%; text-align: left; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+    .p-item:hover { background: rgba(var(--fg), .03); }
+    .p-item.is-on { background: rgba(255,93,10,.09); box-shadow: inset 3px 0 0 var(--orange); }
+    .p-item b { display: block; font-size: 14.5px; font-weight: 600; line-height: 1.3; letter-spacing: -0.01em; }
+    .p-item small { display: flex; gap: 8px; align-items: center; margin-top: 6px; font-size: 12px; color: var(--dim); flex-wrap: wrap; }
+    .st { font-size: 10.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; }
+    .st--pub { background: rgba(60,190,110,.16); color: #2fa865; }
+    .st--ras { background: rgba(var(--fg), .08); color: var(--muted); }
+    .st--pos { background: rgba(255,93,10,.14); color: var(--accent-text); }
+
+    .p-edit { padding: clamp(18px, 3vw, 36px); max-width: 980px; width: 100%; }
+    .p-edit h1 { font-size: 28px; letter-spacing: -0.04em; margin-bottom: 4px; }
+    .p-edit .sub { color: var(--dim); font-size: 13.5px; margin-bottom: 24px; }
+    .f { display: grid; gap: 6px; margin-bottom: 18px; }
+    .f label, .f .lbl { font-size: 12.5px; font-weight: 600; letter-spacing: .02em; color: var(--muted); }
+    .f small { font-size: 12px; color: var(--dim); }
+    .in { width: 100%; background: var(--bg-2); border: 1px solid var(--line-2); border-radius: 12px; padding: 12px 14px; font-size: 15px; color: var(--text); outline: 0; transition: border-color .2s; }
+    .in:focus { border-color: var(--orange); }
+    textarea.in { resize: vertical; line-height: 1.6; }
+    .in--title { font-size: 22px; font-weight: 650; letter-spacing: -0.03em; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    select.in { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%); background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%; background-size: 5px 5px; background-repeat: no-repeat; padding-right: 34px; }
+
+    .foto { display: grid; grid-template-columns: 220px 1fr; gap: 14px; align-items: start; }
+    .foto__prev { aspect-ratio: 16/10; border-radius: 12px; border: 1px dashed var(--line-2); overflow: hidden; display: grid; place-items: center; color: var(--dim); font-size: 13px; text-align: center; background: var(--bg-2); position: relative; }
+    .foto__prev img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .foto__btns { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .tools { display: flex; gap: 6px; flex-wrap: wrap; }
+    .tools button { padding: 6px 11px; border-radius: 8px; border: 1px solid var(--line-2); font-size: 12.5px; color: var(--muted); }
+    .tools button:hover { color: var(--text); border-color: var(--orange); }
+    .tabs { display: inline-flex; padding: 4px; border-radius: 999px; border: 1px solid var(--line-2); margin-left: auto; }
+    .tabs button { padding: 5px 12px; border-radius: 999px; font-size: 12.5px; color: var(--muted); }
+    .tabs button.is-on { background: var(--text); color: var(--bg); }
+    .preview { border: 1px solid var(--line-2); border-radius: 12px; padding: 22px 24px; min-height: 360px; background: var(--bg-2); }
+    .preview .prose { font-size: 17px; }
+
+    .actions { position: sticky; bottom: 0; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; padding: 16px 0; margin-top: 8px; border-top: 1px solid var(--line); background: var(--bg); }
+    .actions .grow { flex: 1; }
+    .btn--danger { color: #e5533d; border: 1px solid rgba(229,83,61,.4); height: 44px; padding: 0 18px; }
+    .btn--danger:hover { background: rgba(229,83,61,.1); }
+    .msg { font-size: 13.5px; color: var(--muted); }
+    .msg.is-err { color: #e5533d; } .msg.is-ok { color: #2fa865; }
+
+    .login { min-height: 100vh; display: grid; place-items: center; padding: 24px; position: relative; overflow: hidden; }
+    .login::before { content: ""; position: absolute; width: 900px; height: 900px; left: 50%; top: 60%; transform: translate(-50%, -50%); background: radial-gradient(closest-side, rgba(255,93,10,.28), transparent); pointer-events: none; }
+    .login__box { position: relative; width: 100%; max-width: 400px; padding: 32px; border-radius: 24px; background: var(--bg-2); border: 1px solid var(--line-2); }
+    .login__box h1 { font-size: 26px; letter-spacing: -0.04em; margin: 22px 0 6px; }
+    .login__box p { color: var(--muted); font-size: 14px; margin-bottom: 22px; }
+    .demo-note { margin-top: 16px; padding: 12px 14px; border-radius: 12px; background: rgba(251,185,49,.12); color: var(--text); font-size: 13px; line-height: 1.45; }
+
+    .empty { color: var(--dim); padding: 30px 18px; font-size: 14px; }
+    [hidden] { display: none !important; }
+
+    @media (max-width: 900px) {
+      .p-wrap { grid-template-columns: 1fr; }
+      .p-list { border-right: 0; max-height: 46vh; border-bottom: 1px solid var(--line); }
+      .grid2, .grid3, .foto { grid-template-columns: 1fr; }
+      .p-top__title { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs><linearGradient id="sw" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FBB931"/><stop offset="1" stop-color="#FFE3B3"/></linearGradient></defs>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="currentColor"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6 19 19M5 19l1.4-1.4M17.6 6.4 19 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+</svg>
+
+<!-- ========== LOGIN ========== -->
+<section class="login" data-view="login" hidden>
+  <form class="login__box" data-login>
+    <span class="logo"><span class="logo__mark">ORIGEM<span class="logo__68">68<svg viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 30 C 22 40, 44 20, 66 13 S 92 6, 100 2 C 92 15, 74 21, 58 26 S 20 40, 0 30Z" fill="url(#sw)"/></svg></span></span><span class="logo__tag">Painel da redação</span></span>
+    <h1>Entrar no painel</h1>
+    <p>Acesso restrito à equipe de redação.</p>
+    <div class="f"><label for="l-email">E-mail</label><input class="in" id="l-email" type="email" autocomplete="username" required></div>
+    <div class="f"><label for="l-senha">Senha</label><input class="in" id="l-senha" type="password" autocomplete="current-password" required></div>
+    <button class="btn btn--primary" type="submit" style="width:100%;justify-content:space-between">Entrar <span class="btn__arrow"><svg><use href="#i-arrow"/></svg></span></button>
+    <p class="msg" data-login-msg style="margin:12px 0 0" aria-live="polite"></p>
+  </form>
+</section>
+
+<!-- ========== APP ========== -->
+<div data-view="app" hidden>
+  <header class="p-top">
+    <a class="logo" href="index.html" title="Abrir o site"><span class="logo__mark">ORIGEM<span class="logo__68">68<svg viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 30 C 22 40, 44 20, 66 13 S 92 6, 100 2 C 92 15, 74 21, 58 26 S 20 40, 0 30Z" fill="url(#sw)"/></svg></span></span></a>
+    <span class="p-top__title">Painel da redação</span>
+    <div class="p-top__right">
+      <span class="badge" data-modo></span>
+      <button class="icon-btn theme-btn" data-theme-toggle aria-label="Mudar tema"><svg class="i-moon"><use href="#i-moon"/></svg><svg class="i-sun"><use href="#i-sun"/></svg></button>
+      <button class="btn btn--primary btn--sm" data-nova>+ Nova notícia</button>
+      <button class="btn btn--ghost btn--sm" data-sair>Sair</button>
+    </div>
+  </header>
+
+  <div class="p-wrap">
+    <aside class="p-list">
+      <div class="p-list__head">
+        <input class="in" type="search" placeholder="Buscar pelo título…" data-busca aria-label="Buscar notícias">
+        <div class="p-filters" data-filtros>
+          <button class="is-on" data-f="todas">Todas</button>
+          <button data-f="publicado">Publicadas</button>
+          <button data-f="rascunho">Rascunhos</button>
+        </div>
+      </div>
+      <div class="p-items" data-itens></div>
+    </aside>
+
+    <main class="p-edit">
+      <h1 data-ed-titulo>Nova notícia</h1>
+      <div class="sub" data-ed-sub>Preencha e clique em Publicar. Para guardar sem publicar, use Salvar rascunho.</div>
+
+      <form data-form autocomplete="off">
+        <div class="f">
+          <label for="titulo">Título</label>
+          <textarea class="in in--title" id="titulo" rows="2" maxlength="200" required placeholder="Ex.: Rio Acre sobe 40 cm em 24 horas na capital"></textarea>
+        </div>
+        <div class="f">
+          <label for="linha_fina">Linha fina <small>(resumo que aparece abaixo do título)</small></label>
+          <textarea class="in" id="linha_fina" rows="2" maxlength="300"></textarea>
+        </div>
+
+        <div class="grid3">
+          <div class="f">
+            <label for="editoria">Editoria</label>
+            <select class="in" id="editoria">
+              <option>Rio Branco</option><option>Interior</option><option>Política</option><option>Economia</option><option>Amazônia</option><option>Saúde</option><option>Educação</option><option>Segurança</option><option>Esporte</option><option>Cultura</option><option>Negócios</option><option>Cidades</option>
+            </select>
+          </div>
+          <div class="f">
+            <label for="municipio">Município</label>
+            <select class="in" id="municipio">
+              <option value="">— Nenhum —</option>
+              <option>Acrelândia</option><option>Assis Brasil</option><option>Brasiléia</option><option>Bujari</option><option>Capixaba</option><option>Cruzeiro do Sul</option><option>Epitaciolândia</option><option>Feijó</option><option>Jordão</option><option>Mâncio Lima</option><option>Manoel Urbano</option><option>Marechal Thaumaturgo</option><option>Plácido de Castro</option><option>Porto Acre</option><option>Porto Walter</option><option>Rio Branco</option><option>Rodrigues Alves</option><option>Santa Rosa do Purus</option><option>Sena Madureira</option><option>Senador Guiomard</option><option>Tarauacá</option><option>Xapuri</option>
+            </select>
+          </div>
+          <div class="f">
+            <label for="posicao">Posição na capa</label>
+            <select class="in" id="posicao">
+              <option value="normal">Normal (últimas notícias)</option>
+              <option value="destaque">Destaque (ao lado da manchete)</option>
+              <option value="manchete">Manchete (topo da capa)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="f">
+          <span class="lbl">Foto principal</span>
+          <div class="foto">
+            <div class="foto__prev" data-foto-prev>Sem foto<br>(a capa usa um fundo laranja)</div>
+            <div style="display:grid;gap:10px">
+              <div class="foto__btns">
+                <label class="btn btn--ghost btn--sm" style="cursor:pointer">Escolher foto<input type="file" accept="image/jpeg,image/png,image/webp" data-foto-arquivo hidden></label>
+                <button type="button" class="btn btn--ghost btn--sm" data-foto-remover hidden>Remover foto</button>
+              </div>
+              <input class="in" id="foto_credito" placeholder="Crédito da foto (ex.: Foto: Maria Silva/Origem 68)">
+              <small>JPG, PNG ou WebP, até 5 MB. Prefira fotos na horizontal.</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="f">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <label for="corpo" style="margin-right:4px">Texto da matéria</label>
+            <div class="tools" data-tools>
+              <button type="button" data-ins="## " title="Intertítulo">Intertítulo</button>
+              <button type="button" data-ins="> " title="Citação">Citação</button>
+              <button type="button" data-ins="- " title="Lista">Lista</button>
+              <button type="button" data-wrap="**" title="Negrito"><b>N</b></button>
+              <button type="button" data-link title="Link">Link</button>
+            </div>
+            <div class="tabs"><button type="button" class="is-on" data-tab="escrever">Escrever</button><button type="button" data-tab="ver">Pré-visualizar</button></div>
+          </div>
+          <textarea class="in" id="corpo" rows="18" placeholder="Escreva o texto. Deixe uma linha em branco entre os parágrafos."></textarea>
+          <div class="preview" data-preview hidden><div class="prose"></div></div>
+          <small>Parágrafos: linha em branco entre eles · <b>##</b> intertítulo · <b>&gt;</b> citação (na linha seguinte, “— Nome” vira o crédito) · <b>-</b> lista · <b>**negrito**</b></small>
+        </div>
+
+        <div class="grid2">
+          <div class="f"><label for="autor">Autor</label><input class="in" id="autor" value="Redação Origem 68"></div>
+          <div class="f"><label for="slug">Endereço da página <small>(gerado pelo título)</small></label><input class="in" id="slug" pattern="[a-z0-9]+(-[a-z0-9]+)*" placeholder="rio-acre-sobe-40-cm"></div>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn btn--primary" data-acao="publicado">Publicar <span class="btn__arrow"><svg><use href="#i-arrow"/></svg></span></button>
+          <button type="submit" class="btn btn--ghost" data-acao="rascunho" style="padding-right:20px">Salvar rascunho</button>
+          <a class="btn btn--ghost" data-ver target="_blank" hidden style="padding-right:20px">Ver no site</a>
+          <span class="msg grow" data-msg aria-live="polite"></span>
+          <button type="button" class="btn btn--danger" data-apagar hidden>Apagar</button>
+        </div>
+      </form>
+    </main>
+  </div>
+</div>
+
+<script src="assets/js/config.js?v=2"></script>
+<script src="assets/js/dados.js?v=1"></script>
+<script>
+(function () {
+  const { api, modo, util } = window.O68;
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+  const form = $('[data-form]');
+  const campos = ['titulo', 'linha_fina', 'editoria', 'municipio', 'posicao', 'foto_credito', 'corpo', 'autor', 'slug'];
+  let lista = [], atual = null, filtro = 'todas', slugManual = false, fotoUrl = '', sujo = false;
+
+  // ---------- tema ----------
+  const root = document.documentElement;
+  $$('[data-theme-toggle]').forEach(b => b.addEventListener('click', () => {
+    const t = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    root.setAttribute('data-theme', t); try { localStorage.setItem('o68-tema', t); } catch (_) {}
+  }));
+
+  // ---------- telas ----------
+  const mostrar = v => $$('[data-view]').forEach(el => el.hidden = el.dataset.view !== v);
+  const msg = (t, tipo) => { const m = $('[data-msg]'); m.textContent = t || ''; m.className = 'msg grow' + (tipo ? ' is-' + tipo : ''); };
+
+  async function iniciar() {
+    $('[data-modo]').textContent = modo === 'demo' ? 'Modo demonstração' : 'Conectado';
+    $('[data-modo]').classList.toggle('badge--on', modo !== 'demo');
+    if (modo === 'demo') {
+      const n = document.createElement('div'); n.className = 'demo-note';
+      n.innerHTML = '<b>Modo demonstração:</b> qualquer e-mail e senha entram. As notícias ficam salvas só neste navegador.';
+      $('[data-login]').appendChild(n);
+    }
+    let user = null; try { user = await api.sessao(); } catch (e) { $('[data-login-msg]').textContent = e.message; }
+    if (user && modo !== 'demo') return abrirApp();
+    mostrar('login'); $('#l-email').focus();
+  }
+
+  $('[data-login]').addEventListener('submit', async e => {
+    e.preventDefault();
+    const m = $('[data-login-msg]'); m.className = 'msg'; m.textContent = 'Entrando…';
+    try { await api.entrar($('#l-email').value.trim(), $('#l-senha').value); m.textContent = ''; abrirApp(); }
+    catch (err) { m.className = 'msg is-err'; m.textContent = err.message; }
+  });
+  $('[data-sair]').addEventListener('click', async () => { if (!confirmarSaida()) return; await api.sair(); location.reload(); });
+
+  async function abrirApp() { mostrar('app'); await carregar(); novo(); }
+
+  // ---------- lista ----------
+  async function carregar() {
+    try { lista = await api.todas(); } catch (e) { lista = []; msg(e.message, 'err'); }
+    desenharLista();
+  }
+  function desenharLista() {
+    const busca = $('[data-busca]').value.trim();
+    const q = busca ? util.slugify(busca).replace(/-/g, ' ') : '';
+    const itens = lista.filter(n => (filtro === 'todas' || n.status === filtro) && (!q || util.slugify(n.titulo).replace(/-/g, ' ').includes(q)));
+    $('[data-itens]').innerHTML = itens.length ? itens.map(n => `
+      <button class="p-item ${atual && atual.id === n.id ? 'is-on' : ''}" data-id="${util.esc(n.id)}">
+        <b>${util.esc(n.titulo)}</b>
+        <small>
+          <span class="st ${n.status === 'publicado' ? 'st--pub">Publicada' : 'st--ras">Rascunho'}</span>
+          ${n.posicao !== 'normal' ? `<span class="st st--pos">${n.posicao === 'manchete' ? 'Manchete' : 'Destaque'}</span>` : ''}
+          <span>${util.esc(n.editoria)}</span><span>${util.tempoRelativo(n.publicado_em || n.criado_em)}</span>
+        </small>
+      </button>`).join('') : '<div class="empty">Nenhuma notícia encontrada.</div>';
+  }
+  $('[data-itens]').addEventListener('click', e => {
+    const b = e.target.closest('[data-id]'); if (!b || !confirmarSaida()) return;
+    abrir(lista.find(n => String(n.id) === b.dataset.id));
+  });
+  $('[data-busca]').addEventListener('input', desenharLista);
+  $('[data-filtros]').addEventListener('click', e => {
+    const b = e.target.closest('[data-f]'); if (!b) return;
+    filtro = b.dataset.f; $$('[data-f]').forEach(x => x.classList.toggle('is-on', x === b)); desenharLista();
+  });
+
+  // ---------- editor ----------
+  function preencher(n) {
+    campos.forEach(c => { $('#' + c).value = n[c] == null ? '' : n[c]; });
+    if (!$('#autor').value) $('#autor').value = 'Redação Origem 68';
+    if (!$('#editoria').value) $('#editoria').value = 'Rio Branco';
+    if (!$('#posicao').value) $('#posicao').value = 'normal';
+    setFoto(n.foto_url || '');
+    slugManual = !!n.id; sujo = false; aba('escrever'); msg('');
+  }
+  function novo() {
+    atual = null; preencher({});
+    $('[data-ed-titulo]').textContent = 'Nova notícia';
+    $('[data-ed-sub]').textContent = 'Preencha e clique em Publicar. Para guardar sem publicar, use Salvar rascunho.';
+    $('[data-apagar]').hidden = true; $('[data-ver]').hidden = true;
+    desenharLista(); $('#titulo').focus();
+  }
+  function abrir(n) {
+    atual = n; preencher(n);
+    $('[data-ed-titulo]').textContent = n.status === 'publicado' ? 'Editar notícia publicada' : 'Editar rascunho';
+    $('[data-ed-sub]').textContent = (n.status === 'publicado' ? 'Publicada em ' + util.dataHora(n.publicado_em) : 'Criada em ' + util.dataHora(n.criado_em)) + (n.leituras ? ` · ${n.leituras} leituras` : '');
+    $('[data-apagar]').hidden = false;
+    const ver = $('[data-ver]'); ver.hidden = n.status !== 'publicado'; ver.href = 'artigo.html?n=' + encodeURIComponent(n.slug);
+    desenharLista();
+  }
+  $('[data-nova]').addEventListener('click', () => { if (confirmarSaida()) novo(); });
+
+  form.addEventListener('input', e => {
+    sujo = true;
+    if (e.target.id === 'slug') slugManual = true;
+    if (e.target.id === 'titulo' && !slugManual) $('#slug').value = util.slugify(e.target.value);
+  });
+  const confirmarSaida = () => !sujo || confirm('Há alterações não salvas. Descartar?');
+  window.addEventListener('beforeunload', e => { if (sujo) { e.preventDefault(); e.returnValue = ''; } });
+
+  // foto
+  function setFoto(url) {
+    fotoUrl = url; const p = $('[data-foto-prev]');
+    p.innerHTML = url ? `<img src="${util.esc(url)}" alt="Pré-visualização da foto">` : 'Sem foto<br>(a capa usa um fundo laranja)';
+    $('[data-foto-remover]').hidden = !url;
+  }
+  $('[data-foto-arquivo]').addEventListener('change', async e => {
+    const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+    if (f.size > 5 * 1024 * 1024) return msg('A foto passa de 5 MB. Reduza antes de enviar.', 'err');
+    msg('Enviando foto…');
+    try { setFoto(await api.enviarFoto(f)); sujo = true; msg('Foto pronta.', 'ok'); }
+    catch (err) { msg(err.message, 'err'); }
+  });
+  $('[data-foto-remover]').addEventListener('click', () => { setFoto(''); sujo = true; });
+
+  // ferramentas de texto
+  const ta = $('#corpo');
+  $('[data-tools]').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    const [s, f] = [ta.selectionStart, ta.selectionEnd], sel = ta.value.slice(s, f);
+    let novoTxt, cur;
+    if (b.dataset.ins) {
+      const ini = ta.value.lastIndexOf('\n', s - 1) + 1;
+      novoTxt = ta.value.slice(0, ini) + b.dataset.ins + ta.value.slice(ini); cur = f + b.dataset.ins.length;
+    } else if (b.dataset.wrap) {
+      const w = b.dataset.wrap; novoTxt = ta.value.slice(0, s) + w + (sel || 'texto') + w + ta.value.slice(f); cur = s + w.length + (sel || 'texto').length;
+    } else {
+      const url = prompt('Endereço do link (https://…)'); if (!url || !/^https?:\/\//.test(url)) return;
+      const t = `[${sel || 'texto do link'}](${url})`; novoTxt = ta.value.slice(0, s) + t + ta.value.slice(f); cur = s + t.length;
+    }
+    ta.value = novoTxt; ta.focus(); ta.setSelectionRange(cur, cur); sujo = true;
+  });
+
+  // pré-visualização
+  function aba(qual) {
+    $$('[data-tab]').forEach(b => b.classList.toggle('is-on', b.dataset.tab === qual));
+    const ver = qual === 'ver'; ta.hidden = ver; $('[data-preview]').hidden = !ver;
+    if (ver) $('[data-preview] .prose').innerHTML = util.corpoHTML(ta.value) || '<p style="color:var(--dim)">Nada escrito ainda.</p>';
+  }
+  $$('[data-tab]').forEach(b => b.addEventListener('click', () => aba(b.dataset.tab)));
+
+  // salvar / publicar
+  let acao = 'publicado';
+  $$('[data-acao]').forEach(b => b.addEventListener('click', () => { acao = b.dataset.acao; }));
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const n = { ...(atual || {}) };
+    campos.forEach(c => { n[c] = $('#' + c).value.trim(); });
+    n.slug = n.slug || util.slugify(n.titulo);
+    n.municipio = n.municipio || null; n.foto_url = fotoUrl || null; n.status = acao;
+    if (acao === 'publicado' && !n.corpo) return msg('Escreva o texto antes de publicar.', 'err');
+    if (acao === 'publicado' && atual && atual.status !== 'publicado') n.publicado_em = null; // publica agora
+    $$('[data-acao]').forEach(b => b.disabled = true); msg(acao === 'publicado' ? 'Publicando…' : 'Salvando…');
+    try {
+      await api.salvar(n); sujo = false;
+      await carregar();
+      const salvo = lista.find(x => x.slug === n.slug);
+      if (salvo) abrir(salvo);
+      msg(acao === 'publicado' ? 'Publicada! Já aparece no site.' : 'Rascunho salvo.', 'ok');
+    } catch (err) { msg(err.message, 'err'); }
+    finally { $$('[data-acao]').forEach(b => b.disabled = false); }
+  });
+
+  $('[data-apagar]').addEventListener('click', async () => {
+    if (!atual || !confirm(`Apagar "${atual.titulo}"? Isso não pode ser desfeito.`)) return;
+    try { await api.apagar(atual.id); sujo = false; await carregar(); novo(); msg('Notícia apagada.', 'ok'); }
+    catch (err) { msg(err.message, 'err'); }
+  });
+
+  iniciar();
+})();
+</script>
+</body>
+</html>
