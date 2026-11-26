@@ -11,8 +11,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://vsfheoticrdosunjmhvo.supabase.co" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
-  <script src="assets/js/tema.js?v=14"></script>
-  <link rel="stylesheet" href="assets/css/style.css?v=14">
+  <script src="assets/js/tema.js?v=15"></script>
+  <link rel="stylesheet" href="assets/css/style.css?v=15">
 </head>
 <body class="is-loading">
 
@@ -214,6 +214,9 @@
   <a class="ad__slot" href="pagina.html?p=anuncie"><span><b>Anuncie aqui</b><span class="ad__size--d">970 × 250</span><span class="ad__size--m">300 × 250</span></span></a>
 </div></div></div>
 
+  <!-- SEÇÕES POR EDITORIA (automáticas; ordem e escolha no painel: Capa e site → Seções da capa) -->
+  <div data-secoes="1"></div>
+
   <!-- EDITORIAS (vitrine): última notícia de 4 editorias escolhidas no painel -->
   <section class="section" id="editorias" style="padding-top:0" data-secao="vitrine" hidden>
     <div class="wrap">
@@ -244,6 +247,8 @@
       </div>
     </div>
   </section>
+
+  <div data-secoes="2"></div>
 
   <!-- VÍDEOS E PODCASTS (painel: Capa e site) -->
   <section class="section" id="midia" style="padding-top:0" data-secao="midia" hidden>
@@ -284,6 +289,21 @@
         </div>
       </div>
       <div class="opinion" data-colunas></div>
+    </div>
+  </section>
+
+  <!-- MAIS NOTÍCIAS: tudo o que não apareceu acima, com "carregar mais" -->
+  <section class="section" id="mais" style="padding-top:0" hidden>
+    <div class="wrap">
+      <div class="section__head">
+        <div>
+          <div class="eyebrow">Mais notícias</div>
+          <h2 class="h-section">Continue <em>por dentro</em></h2>
+        </div>
+        <a href="lista.html" class="link-more">Ver todas <svg><use href="#i-arrow"/></svg></a>
+      </div>
+      <div class="grid-news mais-grid" data-mais></div>
+      <div class="mais__fim"><button type="button" class="btn btn--ghost" data-mais-btn>Carregar mais notícias <span class="btn__arrow"><svg><use href="#i-arrow"/></svg></span></button></div>
     </div>
   </section>
 
@@ -401,11 +421,11 @@
   </form>
 </div>
 
-<script src="assets/js/config.js?v=14"></script>
-<script src="assets/js/dados.js?v=14"></script>
-<script src="assets/js/main.js?v=14"></script>
-<script src="assets/js/site.js?v=14"></script>
-<script src="assets/js/capa.js?v=14"></script>
-<script src="assets/js/ofertas.js?v=14"></script>
+<script src="assets/js/config.js?v=15"></script>
+<script src="assets/js/dados.js?v=15"></script>
+<script src="assets/js/main.js?v=15"></script>
+<script src="assets/js/site.js?v=15"></script>
+<script src="assets/js/capa.js?v=15"></script>
+<script src="assets/js/ofertas.js?v=15"></script>
 </body>
 </html>

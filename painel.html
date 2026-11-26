@@ -11,8 +11,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://vsfheoticrdosunjmhvo.supabase.co" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
-  <script src="assets/js/tema.js?v=14"></script>
-  <link rel="stylesheet" href="assets/css/style.css?v=14">
+  <script src="assets/js/tema.js?v=15"></script>
+  <link rel="stylesheet" href="assets/css/style.css?v=15">
   <style>
     body { min-height: 100vh; }
     .p-top { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 14px; height: 68px; padding: 0 clamp(16px, 3vw, 28px); border-bottom: 1px solid var(--line); background: rgba(var(--bgc), .85); backdrop-filter: blur(14px); }
@@ -148,6 +148,19 @@
     .marca-prev img { max-height: 80px; max-width: 90%; object-fit: contain; }
     .marca-prev--ico { width: 90px; }
     .st--robo { background: rgba(80,140,255,.16); color: #5b8def; }
+    .fontes-ajuda { font-size: 13px; color: var(--dim); line-height: 1.55; margin: -4px 0 14px; }
+    .fonte { border: 1px solid var(--line); border-radius: 14px; padding: 12px; margin-bottom: 10px; display: grid; gap: 8px; }
+    .fonte.is-off { opacity: .55; }
+    .fonte__l1 { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .fonte__l1 [data-k="nome"] { flex: 1 1 170px; } .fonte__l1 .fonte__url { flex: 3 1 300px; }
+    .fonte__l1 select { flex: 1 1 120px; width: auto; }
+    .fonte__l2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .fonte .in { height: 38px; font-size: 13.5px; padding: 0 10px; }
+    .fonte__on { display: flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+    .fonte__res { font-size: 12.5px; color: var(--dim); line-height: 1.5; }
+    .fonte__res.is-ok { color: var(--text); } .fonte__res.is-err { color: #e5484d; }
+    .fonte__res ul { margin: 4px 0 0 18px; }
+    @media (max-width: 720px) { .fonte__l2 { grid-template-columns: 1fr; } }
     .st--desc { background: rgba(229,83,61,.12); color: #e5533d; }
     [hidden] { display: none !important; }
 
@@ -369,6 +382,22 @@
       <div class="p-save"><button class="btn btn--primary btn--sm">Salvar vitrine</button><span class="msg"></span></div>
     </form>
 
+    <form class="p-card" data-bloco="secoes">
+      <h2>Seções da capa <small>blocos por editoria abaixo das Últimas · cada um aparece quando tem 2 ou mais notícias que ainda não estão no topo</small></h2>
+      <p class="fontes-ajuda">Deixe tudo em “Automático” para mostrar todas as editorias que tiverem notícias (na ordem padrão). Ou escolha quais e em que ordem. No fim da capa fica sempre o “Mais notícias”, com o botão “Carregar mais”.</p>
+      <div class="grid4">
+        <div class="f"><label>1ª seção</label><select class="in" name="editorias[0]" data-opcoes="editorias" data-vazio></select></div>
+        <div class="f"><label>2ª seção</label><select class="in" name="editorias[1]" data-opcoes="editorias" data-vazio></select></div>
+        <div class="f"><label>3ª seção</label><select class="in" name="editorias[2]" data-opcoes="editorias" data-vazio></select></div>
+        <div class="f"><label>4ª seção</label><select class="in" name="editorias[3]" data-opcoes="editorias" data-vazio></select></div>
+        <div class="f"><label>5ª seção</label><select class="in" name="editorias[4]" data-opcoes="editorias" data-vazio></select></div>
+        <div class="f"><label>6ª seção</label><select class="in" name="editorias[5]" data-opcoes="editorias" data-vazio></select></div>
+        <div class="f"><label>7ª seção</label><select class="in" name="editorias[6]" data-opcoes="editorias" data-vazio></select></div>
+        <div class="f"><label>8ª seção</label><select class="in" name="editorias[7]" data-opcoes="editorias" data-vazio></select></div>
+      </div>
+      <div class="p-save"><button class="btn btn--primary btn--sm">Salvar seções</button><span class="msg"></span></div>
+    </form>
+
     <form class="p-card" data-bloco="midia">
       <h2>Vídeos e podcasts <small>o 1º vira o destaque grande · links do YouTube mostram a capa e tocam no site</small></h2>
       <div data-repetir="5" data-nome="itens">
@@ -503,16 +532,31 @@
       <h2>Configuração</h2>
       <div class="grid2">
         <div class="f"><label>Robô</label><select class="in" name="ativo"><option value="sim">Ligado</option><option value="nao">Pausado</option></select></div>
-        <div class="f"><label>Máximo de matérias por rodada</label><input class="in" name="max_rodada" type="number" min="1" max="5" placeholder="4"><small>De 1 a 5 (limite do plano grátis).</small></div>
-        <div class="f"><label>Fontes oficiais</label><select class="in" name="oficiais"><option value="publicar">Publicar direto</option><option value="rascunho">Também virar rascunho</option></select></div>
+        <div class="f"><label>Máximo de matérias por rodada</label><input class="in" name="max_rodada" type="number" min="1" max="4" placeholder="4"><small>De 1 a 4 (limite do plano grátis). O robô roda de hora em hora.</small></div>
+        <div class="f"><label>Rigor do filtro</label><select class="in" name="rigor"><option value="normal">Normal: policial de rotina fica de fora</option><option value="leve">Leve: aceita policial informativo, barra só o chocante</option><option value="rigoroso">Rigoroso: quase nada de policial</option></select><small>Se o robô estiver barrando demais, use “Leve”.</small></div>
+        <div class="f"><label>Publicação direta</label><select class="in" name="oficiais"><option value="publicar">Conforme cada fonte (abaixo)</option><option value="rascunho">Tudo vira rascunho para eu revisar</option></select></div>
         <div class="f"><label>Autor das matérias do robô</label><input class="in" name="autor" placeholder="Redação Origem 68"></div>
       </div>
       <div class="p-save"><button class="btn btn--primary btn--sm">Salvar configuração</button><span class="msg"></span></div>
     </form>
+    <div class="p-card" data-fontes>
+      <h2>Fontes de notícias <small>de onde o robô tira as matérias · até 14 fontes</small></h2>
+      <p class="fontes-ajuda">Cole o endereço do site ou do feed (RSS) e clique em <b>Testar</b>: o robô acha o feed sozinho e mostra as últimas notícias que ele vai ler.
+        <b>Tipo</b>: “Oficial” = governo e prefeituras (destaca o órgão) · “Portal” = sites de notícia · “Pauta geral” = assuntos de fora do Acre (tecnologia, ciência, curiosidades; no máximo 1 por rodada).
+        <b>Só se citar</b>: palavras separadas por vírgula; a notícia só entra se tiver alguma delas (útil para portais nacionais, ex.: “acre, rio branco”). <b>Ignorar</b>: pula títulos com essas palavras.</p>
+      <div data-fontes-lista><p class="empty">Carregando…</p></div>
+      <div class="p-save">
+        <button type="button" class="btn btn--ghost btn--sm" data-fonte-add>+ Adicionar fonte</button>
+        <button type="button" class="btn btn--ghost btn--sm" data-fontes-padrao>Voltar às fontes padrão</button>
+        <button type="button" class="btn btn--primary btn--sm" data-fontes-salvar>Salvar fontes</button>
+        <span class="msg" data-fontes-msg></span>
+      </div>
+    </div>
     <div class="p-card">
       <h2>Ações</h2>
       <div class="p-save">
         <button type="button" class="btn btn--primary btn--sm" data-robo-rodar>Rodar agora</button>
+        <button type="button" class="btn btn--ghost btn--sm" data-robo-fotos>Trocar imagens de IA por fotos reais</button>
         <button type="button" class="btn btn--ghost btn--sm" data-robo-telegram>Conectar meu Telegram</button>
         <span class="msg" data-robo-msg></span>
       </div>
@@ -533,8 +577,8 @@
   </main>
 </div>
 
-<script src="assets/js/config.js?v=14"></script>
-<script src="assets/js/dados.js?v=14"></script>
+<script src="assets/js/config.js?v=15"></script>
+<script src="assets/js/dados.js?v=15"></script>
 <script>
 (function () {
   const { api, modo, util } = window.O68;
@@ -722,8 +766,8 @@
   iniciar();
 })();
 </script>
-<script src="assets/js/painel-site.js?v=14"></script>
-<script src="assets/js/painel-extra.js?v=14"></script>
-<script src="assets/js/painel-dash.js?v=14"></script>
+<script src="assets/js/painel-site.js?v=15"></script>
+<script src="assets/js/painel-extra.js?v=15"></script>
+<script src="assets/js/painel-dash.js?v=15"></script>
 </body>
 </html>

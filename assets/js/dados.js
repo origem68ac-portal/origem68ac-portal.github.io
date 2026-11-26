@@ -120,6 +120,7 @@
     async salvarOferta() { throw new Error('Ofertas só funcionam conectadas ao banco.'); },
     async apagarOferta() {},
     async publicadas(limite = 30) { return demoLer().filter(n => n.status === 'publicado').sort(porData).slice(0, limite); },
+    async recentes(limite = 120, pular = 0) { return demoLer().filter(n => n.status === 'publicado').sort(porData).slice(pular, pular + limite); },
     async maisLidas(limite = 4) { return demoLer().filter(n => n.status === 'publicado').sort((a, b) => b.leituras - a.leituras).slice(0, limite); },
     async porSlug(slug) { return demoLer().find(n => n.slug === slug && n.status === 'publicado') || null; },
     async registrarLeitura(slug) { const l = demoLer(); const n = l.find(x => x.slug === slug); if (n) { n.leituras++; try { demoGravar(l); } catch (_) {} } },
@@ -244,6 +245,8 @@
     },
     async apagarOferta(id) { const c = await cliente(); ok(await c.from('ofertas').delete().eq('id', id)); },
     async publicadas(limite = 30) { return rest(`noticias?select=${CAMPOS_LISTA},fonte_nome&${PUB}&limit=${limite}`); },
+    // versão leve (sem o texto): para as seções por editoria e o "Mais notícias" da capa
+    async recentes(limite = 120, pular = 0) { return rest(`noticias?select=id,slug,titulo,linha_fina,editoria,municipio,foto_url,foto_credito,publicado_em&${PUB}&offset=${pular}&limit=${limite}`); },
     async maisLidas(limite = 4) { return rest(`noticias?select=slug,titulo,editoria&status=eq.publicado&publicado_em=gte.${enc(new Date(Date.now() - 7 * 864e5).toISOString())}&order=leituras.desc&limit=${limite}`); },
     async porSlug(slug) { return (await rest(`noticias?select=${CAMPOS}&status=eq.publicado&slug=eq.${enc(slug)}&limit=1`))[0] || null; },
     async registrarLeitura(slug) { try { await rest('rpc/registrar_leitura', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ p_slug: slug }) }); } catch (_) {} },

@@ -25,7 +25,7 @@
     for (let i = 1; i < n; i++) box.appendChild(modelo.cloneNode(true));
     [...box.children].forEach((linha, i) => $$('[name]', linha).forEach(inp => { inp.name = `${box.dataset.nome}[${i}].${inp.name}`; }));
   });
-  $$('[data-opcoes="editorias"]').forEach(s => { s.innerHTML = util.EDITORIAS.map(e => `<option>${util.esc(e)}</option>`).join(''); });
+  $$('[data-opcoes="editorias"]').forEach(s => { s.innerHTML = (s.hasAttribute('data-vazio') ? '<option value="">Automático</option>' : '') + util.EDITORIAS.map(e => `<option>${util.esc(e)}</option>`).join(''); });
 
   // nome "itens[0].titulo" ↔ objeto { itens: [{ titulo }] }
   const partes = nome => nome.split(/[\[\].]+/).filter(Boolean).map(p => /^\d+$/.test(p) ? +p : p);
@@ -64,6 +64,11 @@
     e.preventDefault();
     const dados = lerForm(form);
     if (form.dataset.bloco === 'midia' && dados.itens.some(x => x.url && !util.linkSeguro(x.url))) return aviso(form, 'Os links precisam começar com https://', 'err');
+    // o robô guarda dados que não estão no formulário (ex.: o Telegram conectado): mantém o que já existe
+    if (form.dataset.bloco === 'robo') {
+      try { if (!blocos) blocos = await api.blocos(); } catch (_) {}
+      Object.assign(dados, { ...((blocos && blocos.robo) || {}), ...dados });
+    }
     aviso(form, 'Salvando…');
     try {
       await api.salvarBloco(form.dataset.bloco, dados);
@@ -121,6 +126,7 @@
   async function carregarRobo() {
     const f = $('form[data-bloco="robo"]');
     try { if (!blocos) blocos = await api.blocos(); preencherForm(f, blocos.robo || {}); } catch (_) {}
+    if (!fontesCarregadas) carregarFontes();
     const box = $('[data-robo-lista]');
     try {
       const l = await api.roboVistos(80);
@@ -143,12 +149,119 @@
     return d;
   }
   const roboMsg = (t, tipo) => { const m = $('[data-robo-msg]'); m.textContent = t; m.className = 'msg' + (tipo ? ' is-' + tipo : ''); };
+  const AVISO_COTA = 'A cota grátis de IA de hoje acabou (os “neurônios”). Ela renova todos os dias às 19h, horário do Acre; o robô volta sozinho na rodada seguinte.';
+
+  /* ---------- fontes do robô (bloco "robo_fontes") ---------- */
+  let fontesCarregadas = false;
+  const TIPOS = [['oficial', 'Oficial'], ['portal', 'Portal'], ['geral', 'Pauta geral']];
+  const opt = (lista, v) => lista.map(([val, txt]) => `<option value="${val}"${val === v ? ' selected' : ''}>${txt}</option>`).join('');
+  function linhaFonte(f = {}) {
+    const el = document.createElement('div');
+    const tipo = f.tipo || 'portal';
+    const pub = f.publicar || (tipo === 'oficial' ? 'sim' : 'nao');
+    el.className = 'fonte' + (f.ativo === 'nao' ? ' is-off' : '');
+    el.innerHTML = `
+      <div class="fonte__l1">
+        <label class="fonte__on"><input type="checkbox" data-k="ativo" ${f.ativo === 'nao' ? '' : 'checked'}> Ativa</label>
+        <input class="in" data-k="nome" placeholder="Nome (aparece no crédito)" value="${util.esc(f.nome || '')}">
+        <input class="in fonte__url" data-k="url" placeholder="https://site.com.br ou endereço do feed" value="${util.esc(f.url || '')}">
+        <select class="in" data-k="tipo" title="Tipo">${opt(TIPOS, tipo)}</select>
+        <select class="in" data-k="publicar" title="O que fazer com as matérias">${opt([['sim', 'Publicar direto'], ['nao', 'Virar rascunho']], pub)}</select>
+        <select class="in" data-k="fotos" title="Fotos">${opt([['sim', 'Usar a foto'], ['nao', 'Sem foto (IA)']], f.fotos === 'nao' ? 'nao' : 'sim')}</select>
+        <button type="button" class="btn btn--ghost btn--sm" data-fonte-testar>Testar</button>
+        <button type="button" class="btn btn--danger btn--sm" data-fonte-tirar title="Remover">✕</button>
+      </div>
+      <div class="fonte__l2">
+        <input class="in" data-k="exigir" placeholder="Só se citar (opcional): acre, rio branco, cruzeiro do sul…" value="${util.esc(f.exigir || '')}">
+        <input class="in" data-k="ignorar" placeholder="Ignorar títulos com (opcional): ao vivo, vídeo, quiz…" value="${util.esc(f.ignorar || '')}">
+      </div>
+      <div class="fonte__res" data-fonte-res></div>`;
+    return el;
+  }
+  const listaFontes = () => $('[data-fontes-lista]');
+  const fontesMsg = (t, tipo) => { const m = $('[data-fontes-msg]'); m.textContent = t; m.className = 'msg' + (tipo ? ' is-' + tipo : ''); };
+  function desenharFontes(lista) {
+    const box = listaFontes(); box.innerHTML = '';
+    lista.forEach(f => box.appendChild(linhaFonte(f)));
+    if (!lista.length) box.innerHTML = '<p class="empty">Nenhuma fonte. Adicione pelo menos uma.</p>';
+  }
+  async function fontesPadrao() {
+    const base = ((window.O68_CONFIG || {}).roboUrl || '').replace(/\/$/, '');
+    const d = await (await fetch(base + '/fontes-padrao')).json();
+    return d.fontes || [];
+  }
+  async function carregarFontes() {
+    fontesCarregadas = true;
+    try {
+      if (!blocos) blocos = await api.blocos();
+      const salvas = blocos.robo_fontes && blocos.robo_fontes.lista;
+      desenharFontes(salvas && salvas.length ? salvas : await fontesPadrao());
+      if (!(salvas && salvas.length)) fontesMsg('Estas são as fontes padrão. Edite e clique em “Salvar fontes”.');
+    } catch (e) { fontesCarregadas = false; listaFontes().innerHTML = `<p class="empty">${util.esc(e.message)}</p>`; }
+  }
+  const lerFonte = el => Object.fromEntries($$('[data-k]', el).map(i => [i.dataset.k, i.type === 'checkbox' ? (i.checked ? 'sim' : 'nao') : i.value.trim()]));
+  $('[data-fonte-add]').addEventListener('click', () => {
+    const box = listaFontes(); $('.empty', box)?.remove();
+    if ($$('.fonte', box).length >= 14) return fontesMsg('O limite é de 14 fontes (plano grátis). Desative ou remova uma.', 'err');
+    const el = linhaFonte({}); box.appendChild(el); $('[data-k="url"]', el).focus();
+  });
+  $('[data-fontes-padrao]').addEventListener('click', async () => {
+    if (!confirm('Trocar a lista atual pelas fontes padrão? (Só vale depois de clicar em “Salvar fontes”.)')) return;
+    try { desenharFontes(await fontesPadrao()); fontesMsg('Fontes padrão carregadas. Clique em “Salvar fontes” para valer.'); } catch (e) { fontesMsg(e.message, 'err'); }
+  });
+  listaFontes().addEventListener('change', e => { if (e.target.dataset.k === 'ativo') e.target.closest('.fonte').classList.toggle('is-off', !e.target.checked); });
+  listaFontes().addEventListener('click', async e => {
+    const el = e.target.closest('.fonte'); if (!el) return;
+    if (e.target.closest('[data-fonte-tirar]')) { el.remove(); fontesMsg('Fonte removida. Clique em “Salvar fontes” para valer.'); return; }
+    const bt = e.target.closest('[data-fonte-testar]'); if (!bt) return;
+    const f = lerFonte(el), res = $('[data-fonte-res]', el);
+    if (!/^https?:\/\//.test(f.url)) { res.className = 'fonte__res is-err'; res.textContent = 'Cole o endereço completo, começando com https://'; return; }
+    bt.disabled = true; res.className = 'fonte__res'; res.textContent = 'Testando…';
+    try {
+      const d = await comandoRobo('/fonte-teste', f);
+      $('[data-k="url"]', el).value = d.feed;
+      if (!f.nome && d.nome) $('[data-k="nome"]', el).value = d.nome;
+      res.className = 'fonte__res is-ok';
+      res.innerHTML = `✓ Feed encontrado: ${d.total} notícias recentes, ${d.comFoto} com foto${d.passam !== d.total ? ` · ${d.passam} passam pelos filtros “só se citar/ignorar”` : ''}.`
+        + (d.exemplos.length ? `<ul>${d.exemplos.map(x => `<li>${util.esc(x.titulo)}</li>`).join('')}</ul>` : '') + ' Lembre de clicar em “Salvar fontes”.';
+    } catch (err) { res.className = 'fonte__res is-err'; res.textContent = err.message; }
+    finally { bt.disabled = false; }
+  });
+  $('[data-fontes-salvar]').addEventListener('click', async () => {
+    const lista = $$('.fonte', listaFontes()).map(lerFonte).filter(f => f.url);
+    const ruim = lista.find(f => !/^https?:\/\//.test(f.url));
+    if (ruim) return fontesMsg(`Endereço inválido: ${ruim.url}`, 'err');
+    if (!lista.some(f => f.ativo !== 'nao')) return fontesMsg('Deixe pelo menos uma fonte ativa.', 'err');
+    if (lista.length > 14) return fontesMsg('O limite é de 14 fontes.', 'err');
+    lista.forEach(f => { if (!f.nome) try { f.nome = new URL(f.url).hostname.replace(/^www\./, ''); } catch (_) {} });
+    fontesMsg('Salvando…');
+    try { await api.salvarBloco('robo_fontes', { lista }); blocos.robo_fontes = { lista }; desenharFontes(lista); fontesMsg('Fontes salvas! Valem a partir da próxima rodada.', 'ok'); }
+    catch (err) { fontesMsg(err.message, 'err'); }
+  });
+
+  // troca imagens de IA pela foto real da notícia original
+  $('[data-robo-fotos]').addEventListener('click', async e => {
+    e.target.disabled = true;
+    let pular = 0, total = 0, sem = 0;
+    try {
+      for (let volta = 0; volta < 12; volta++) {
+        roboMsg(`Procurando as fotos reais nas notícias originais… ${total} trocada(s) até agora.`);
+        const d = await comandoRobo('/trocar-fotos', { pular });
+        total += d.trocadas.length; sem += d.sem.length; pular = d.proxima;
+        if (!d.restantes) break;
+      }
+      roboMsg(total ? `Pronto: ${total} imagem(ns) de IA trocada(s) pela foto real.${sem ? ` ${sem} notícia(s) não tinham foto utilizável na fonte e continuam com a ilustração.` : ''}`
+        : sem ? `Nenhuma troca: as ${sem} notícia(s) com imagem de IA não têm foto utilizável na fonte.` : 'Não há notícias do robô com imagem de IA.', 'ok');
+    } catch (err) { roboMsg(err.message, 'err'); }
+    finally { e.target.disabled = false; }
+  });
+
   $('[data-robo-rodar]').addEventListener('click', async e => {
     e.target.disabled = true; roboMsg('Rodando… isso leva de 30 segundos a 2 minutos.');
     try {
       const d = await comandoRobo('/rodar');
-      roboMsg(d.pausado ? 'O robô está pausado.' : d.novas === 0 ? 'Nada novo nas fontes agora.'
-        : `Avaliou ${d.avaliadas}, descartou ${d.descartadas} e escreveu ${(d.feitas || []).length}.`, 'ok');
+      roboMsg(d.pausado ? 'O robô está pausado.' : d.cota ? AVISO_COTA : d.novas === 0 ? 'Nada novo nas fontes agora.'
+        : `Avaliou ${d.avaliadas}, descartou ${d.descartadas} e escreveu ${(d.feitas || []).length}.`, d.cota ? 'err' : 'ok');
       carregarRobo();
     } catch (err) { roboMsg(err.message, 'err'); }
     finally { e.target.disabled = false; }

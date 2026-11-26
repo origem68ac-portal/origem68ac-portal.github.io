@@ -13,6 +13,8 @@
   const mun = $('[data-municipios]');
   if (mun) mun.innerHTML = ORDEM.map(m => `<a class="chip" href="lista.html?municipio=${encodeURIComponent(m)}">${esc(m)}</a>`).join('');
 
+  let naCapa = new Set(); // ids já mostrados no topo (manchete, destaque e últimas)
+
   // Capa guardada da última visita: aparece na hora e é atualizada assim que o banco responde
   const CK = 'o68-capa';
   let guardada = null;
@@ -28,6 +30,7 @@
     if (guardada) ({ todas, lidas } = guardada);
   }
   desenhar(todas, lidas);
+  montarSecoes();
 
   // Atualização automática: confere notícias novas a cada minuto (e ao voltar para a aba), sem recarregar a página
   const assinatura = (t, l) => t.slice(0, 20).map(n => n.id + n.titulo + n.posicao + (n.foto_url || '')).join('|') + '#' + l.map(n => n.slug).join('|');
@@ -39,7 +42,7 @@
       const [t, l] = await Promise.all([api.publicadas(40), api.maisLidas(4)]);
       const nova = assinatura(t, l);
       if (nova !== atual) {
-        atual = nova; todas = t; lidas = l; desenhar(t, l);
+        atual = nova; todas = t; lidas = l; desenhar(t, l); montarSecoes();
         try { localStorage.setItem(CK, JSON.stringify({ t: Date.now(), todas: t.map(({ corpo, ...n }) => ({ ...n, corpo: String(corpo || '').slice(0, 1200) })), lidas: l })); } catch (_) {}
       }
     } catch (_) { /* sem conexão: tenta na próxima */ }
@@ -86,6 +89,7 @@
     <div class="meta"><span>${esc(n.editoria)}</span><span>${tempoRelativo(n.publicado_em)}</span></div>`);
 
   const resto = todas.filter(n => !usados.has(n));
+  naCapa = new Set([...usados, ...resto.slice(0, 11)].map(n => n.id)); // não se repetem nas seções abaixo
   for (let i = 1; i <= 11; i++) {
     const n = resto[i - 1], el = document.querySelector(`[data-card="u${i}"]`);
     if (!el) continue;
@@ -120,6 +124,67 @@
   }
   fim();
   } // fim de desenhar()
+
+  /* ---------- seções por editoria + "Mais notícias" ----------
+     Uma consulta leve (sem o texto das matérias) traz as 150 mais recentes; cada editoria com
+     pelo menos 3 notícias que ainda não apareceram no topo ganha um bloco próprio. */
+  async function montarSecoes() {
+    const box1 = $('[data-secoes="1"]'), box2 = $('[data-secoes="2"]'), mais = $('[data-mais]');
+    if (!box1) return;
+    let lista;
+    try { lista = await api.recentes(150); } catch (_) { return; }
+    const cfg = (await blocosP).secoes || {};
+    const escolhidas = (cfg.editorias || []).filter(Boolean);
+    const PADRAO = ['Rio Branco', 'Interior', 'Política', 'Economia', 'Saúde', 'Educação', 'Amazônia', 'Cidades', 'Esporte', 'Cultura', 'Negócios', 'Brasil', 'Tecnologia', 'Curiosidades', 'Segurança'];
+    const ordem = escolhidas.length ? escolhidas : PADRAO;
+    const vistos = new Set(naCapa);
+    const secoes = [];
+    for (const ed of ordem) {
+      const itens = lista.filter(n => n.editoria === ed && !vistos.has(n.id)).slice(0, 5);
+      if (itens.length < 2) continue;
+      itens.forEach(n => vistos.add(n.id));
+      secoes.push(secaoHTML(ed, itens, secoes.length));
+      if (secoes.length >= 10) break;
+    }
+    box1.innerHTML = secoes.slice(0, 3).join('');
+    box2.innerHTML = secoes.slice(3).join('');
+
+    // Mais notícias: o que sobrou, 12 por vez
+    if (!mais) return;
+    let fila = lista.filter(n => !vistos.has(n.id)), pular = lista.length, acabou = lista.length < 150;
+    const btn = $('[data-mais-btn]');
+    const mostrar = async () => {
+      if (fila.length < 12 && !acabou) {
+        try {
+          const ex = await api.recentes(48, pular); pular += ex.length; acabou = ex.length < 48;
+          fila = fila.concat(ex.filter(n => !vistos.has(n.id)));
+        } catch (_) { acabou = true; }
+      }
+      const lote = fila.splice(0, 12);
+      lote.forEach(n => vistos.add(n.id));
+      mais.insertAdjacentHTML('beforeend', lote.map(cardMais).join(''));
+      btn.hidden = !fila.length && acabou;
+      $('#mais').hidden = !mais.children.length;
+    };
+    mais.innerHTML = '';
+    btn.onclick = async () => { btn.disabled = true; await mostrar(); btn.disabled = false; };
+    await mostrar();
+  }
+  function quando(n) { return `<div class="meta"><span>${esc(n.municipio || n.editoria)}</span><span>${tempoRelativo(n.publicado_em)}</span></div>`; }
+  function cardMais(n) { return `<a href="${link(n)}" class="card col-3">${fotoHTML(n, `<span class="card__tag"><span class="tag">${esc(n.editoria)}</span></span>`)}<h3>${esc(n.titulo)}</h3>${quando(n)}</a>`; }
+  function secaoHTML(ed, itens, i) {
+    const [p, ...outros] = itens;
+    const grande = `<a href="${link(p)}" class="card col-6 card--grande">${fotoHTML(p)}<h3>${esc(p.titulo)}</h3>${p.linha_fina ? `<p>${esc(p.linha_fina)}</p>` : ''}${quando(p)}</a>`;
+    const linhas = `<div class="col-6 stack">${outros.map(n => `<a href="${link(n)}" class="card card--row">${fotoHTML(n)}<div><h3>${esc(n.titulo)}</h3><div class="meta" style="margin-top:6px"><span>${esc(n.municipio || ed)}</span><span>${tempoRelativo(n.publicado_em)}</span></div></div></a>`).join('')}</div>`;
+    // varia o desenho para a página não ficar repetitiva: grande à esquerda, grande à direita, ou 4 em linha
+    const corpo = i % 3 === 2 && itens.length >= 4
+      ? itens.slice(0, 4).map(n => `<a href="${link(n)}" class="card col-3">${fotoHTML(n)}<h3>${esc(n.titulo)}</h3>${quando(n)}</a>`).join('')
+      : i % 3 === 1 ? linhas + grande : grande + linhas;
+    return `<section class="section secao-ed"><div class="wrap">
+      <div class="section__head secao-ed__head"><div><div class="eyebrow">Editoria</div><h2 class="h-section">${esc(ed)}</h2></div>
+      <a href="lista.html?editoria=${encodeURIComponent(ed)}" class="link-more">Mais de ${esc(ed)} <svg><use href="#i-arrow"/></svg></a></div>
+      <div class="grid-news${i % 3 === 1 ? ' secao-ed--inv' : ''}">${corpo}</div></div></section>`;
+  }
 
   // ---------- blocos editáveis ----------
   const b = await blocosP;

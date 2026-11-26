@@ -313,6 +313,19 @@ html { overflow-x: clip; }
 .card--row .ph { width: 120px; flex: none; aspect-ratio: 1; border-radius: 12px; }
 .card--row h3 { font-size: 16.5px; }
 .stack { display: flex; flex-direction: column; }
+
+/* ---------- Seções por editoria e "Mais notícias" (capa) ---------- */
+.secao-ed { padding: clamp(28px, 4vw, 52px) 0; border-top: 1px solid var(--line); }
+[data-secoes] .secao-ed:first-child { border-top: 0; }
+.secao-ed__head { margin-bottom: 22px; }
+.secao-ed .h-section { font-size: clamp(26px, 3.2vw, 40px); }
+.card--grande h3 { font-size: clamp(22px, 2.2vw, 30px); line-height: 1.12; }
+.card--grande .ph { aspect-ratio: 16 / 9; }
+.secao-ed .stack .card--row:first-child { border-top: 0; padding-top: 0; }
+.secao-ed .col-3 h3, .mais-grid h3 { font-size: 17px; }
+.mais-grid { row-gap: 32px; }
+.mais__fim { display: flex; justify-content: center; margin-top: 36px; }
+.mais__fim .btn[hidden] { display: none; }
 .stack .card--row:first-child { border-top: 0; padding-top: 0; }
 
 /* ---------- Bloco Amazônia (cream + laranja) ---------- */
@@ -505,6 +518,9 @@ html { overflow-x: clip; }
   .pulse__item:nth-child(3) { border-left: 0; }
   .pulse__item:nth-child(n+3) { border-top: 1px solid var(--line); }
   .col-4 { grid-column: span 6; } .col-8, .col-3 { grid-column: span 12; }
+  .secao-ed .col-3, .mais-grid .col-3 { grid-column: span 6; }
+  .secao-ed .col-6 { grid-column: span 12; }
+  .secao-ed--inv .stack { order: 2; } /* no celular, a notícia grande vem sempre primeiro */
   .cities__inner, .news-cta__inner, .media { grid-template-columns: 1fr; }
   .opinion { grid-template-columns: 1fr 1fr; }
   .footer__grid { grid-template-columns: 1fr 1fr; }
@@ -523,6 +539,10 @@ html { overflow-x: clip; }
   .pulse { grid-template-columns: 1fr; }
   .pulse__item + .pulse__item { border-left: 0; border-top: 1px solid var(--line); }
   .col-4, .col-6 { grid-column: span 12; }
+  .grid-news.mais-grid, .secao-ed .grid-news { gap: 14px; row-gap: 22px; }
+  .secao-ed .col-3 h3, .mais-grid h3 { font-size: 15px; }
+  .mais-grid .meta, .secao-ed .col-3 .meta { font-size: 11.5px; }
+  .mais-grid .card__tag { display: none; }
   .tiles { grid-template-columns: 1fr; }
   .tile { min-height: 210px; }
   .opinion { grid-template-columns: 1fr; }
