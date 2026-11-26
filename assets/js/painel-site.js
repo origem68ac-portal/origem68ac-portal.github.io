@@ -46,6 +46,7 @@
     $$('[name]', form).forEach(inp => {
       const v = partes(inp.name).reduce((o, p) => (o == null ? o : o[p]), d);
       if (v != null && v !== '') inp.value = v;
+      else if (inp.type === 'color') inp.value = inp.defaultValue; // sem cor salva: volta à cor original
       else if (inp.tagName !== 'SELECT') inp.value = '';
     });
   }
@@ -56,6 +57,7 @@
     $$('form[data-bloco]').forEach(f => preencherForm(f, blocos[f.dataset.bloco] || {}));
     const v = $('form[data-bloco="vitrine"]');
     if (!(blocos.vitrine && blocos.vitrine.editorias)) ['Amazônia', 'Cultura', 'Economia', 'Interior'].forEach((e, i) => { v.elements[`editorias[${i}]`].value = e; });
+    previewMarca();
     abrirPagina();
   }
   $$('form[data-bloco]').forEach(form => form.addEventListener('submit', async e => {
@@ -69,6 +71,25 @@
       aviso(form, 'Salvo! Já aparece no site.', 'ok');
     } catch (err) { aviso(form, err.message, 'err'); }
   }));
+
+  /* ---------- marca: envio de logo e ícone ---------- */
+  const fm = $('form[data-bloco="marca"]');
+  function previewMarca() {
+    $$('[data-prev]', fm).forEach(p => {
+      const url = util.linkSeguro(fm.elements[p.dataset.prev].value);
+      p.innerHTML = url ? `<img src="${util.esc(url)}" alt="">` : (p.dataset.prev === 'logo_url' ? 'Sem imagem: usa o nome acima' : 'Padrão');
+    });
+  }
+  $$('[data-subir]', fm).forEach(inp => inp.addEventListener('change', async () => {
+    const f = inp.files[0]; inp.value = ''; if (!f) return;
+    if (f.size > 2 * 1024 * 1024) return aviso(fm, 'O arquivo passa de 2 MB.', 'err');
+    aviso(fm, 'Enviando…');
+    try { fm.elements[inp.dataset.subir].value = await api.enviarArquivo(f); previewMarca(); aviso(fm, 'Imagem pronta. Clique em "Salvar marca".', 'ok'); }
+    catch (err) { aviso(fm, err.message, 'err'); }
+  }));
+  $$('[data-tirar]', fm).forEach(b => b.addEventListener('click', () => { fm.elements[b.dataset.tirar].value = ''; previewMarca(); }));
+  $('[data-cores-padrao]', fm).addEventListener('click', () => { fm.elements.cor1.value = '#ff5d0a'; fm.elements.cor2.value = '#fbb931'; });
+  fm.addEventListener('submit', () => { try { localStorage.setItem('o68-marca', JSON.stringify(lerForm(fm))); } catch (_) {} });
 
   /* ---------- páginas institucionais ---------- */
   const pf = $('[data-pagina-form]'), sel = $('[data-pagina-sel]');

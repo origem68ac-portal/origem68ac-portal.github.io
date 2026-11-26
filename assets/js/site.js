@@ -8,6 +8,47 @@
   // Blocos editáveis: carregados uma vez e compartilhados com capa.js
   const blocos = window.O68.blocos = api.blocos().catch(e => { console.error(e); return {}; });
 
+  /* ---------- Marca (painel → Capa e site → Marca) ----------
+     Aplicada na hora com a última versão guardada no aparelho e atualizada quando o banco responde. */
+  const hex = c => /^#[0-9a-f]{6}$/i.test(c || '') ? c : '';
+  const mistura = (a, b) => '#' + [1, 3, 5].map(i => Math.round((parseInt(a.substr(i, 2), 16) + parseInt(b.substr(i, 2), 16)) / 2).toString(16).padStart(2, '0')).join('');
+  function aplicarMarca(m) {
+    if (!m) return;
+    const st = document.documentElement.style;
+    const c1 = hex(m.cor1), c2 = hex(m.cor2);
+    if (c1) st.setProperty('--orange', c1);
+    if (c2) st.setProperty('--amber', c2);
+    if (c1 || c2) st.setProperty('--tangerine', mistura(c1 || '#FF5D0A', c2 || '#FBB931'));
+    const n1 = (m.nome1 || '').trim(), n2 = (m.nome2 || '').trim();
+    $$('.logo').forEach(logo => {
+      const mark = $('.logo__mark', logo); if (!mark) return;
+      const url = util.linkSeguro(m.logo_url);
+      let img = $('.logo__img', logo);
+      if (url) {
+        if (!img) { img = document.createElement('img'); img.className = 'logo__img'; logo.insertBefore(img, mark); }
+        img.src = url; img.alt = (n1 + ' ' + n2).trim() || 'Logo'; mark.hidden = true;
+      } else {
+        if (img) img.remove(); mark.hidden = false;
+        if (n1 && mark.firstChild && mark.firstChild.nodeType === 3) mark.firstChild.nodeValue = n1;
+        const n68 = $('.logo__68', mark);
+        if (n2 && n68 && n68.firstChild && n68.firstChild.nodeType === 3) n68.firstChild.nodeValue = n2;
+      }
+      const tag = $('.logo__tag', logo); if (tag && m.tagline) tag.textContent = m.tagline;
+    });
+    const nome = (n1 + (n2 ? ' ' + n2 : '')).trim();
+    if (nome) {
+      $$('.footer__word').forEach(w => { w.textContent = (n1 + n2).toUpperCase(); });
+      if (!document.title.includes(nome)) document.title = document.title.replace(/Origem 68/g, nome);
+    }
+    const fav = util.linkSeguro(m.favicon_url);
+    if (fav) { const l = $('link[rel="icon"]'); if (l) { l.href = fav; l.removeAttribute('type'); } }
+  }
+  try { aplicarMarca(JSON.parse(localStorage.getItem('o68-marca'))); } catch (_) {}
+  blocos.then(b => {
+    aplicarMarca(b.marca);
+    try { if (b.marca) localStorage.setItem('o68-marca', JSON.stringify(b.marca)); else localStorage.removeItem('o68-marca'); } catch (_) {}
+  });
+
   /* ---------- Clima e ar em Rio Branco (Open-Meteo, grátis, sem chave) ---------- */
   const CODIGOS = { 0: 'Céu limpo', 1: 'Poucas nuvens', 2: 'Sol entre nuvens', 3: 'Nublado', 45: 'Neblina', 48: 'Neblina', 51: 'Garoa fraca', 53: 'Garoa', 55: 'Garoa forte', 61: 'Chuva fraca', 63: 'Chuva', 65: 'Chuva forte', 80: 'Pancadas de chuva', 81: 'Pancadas de chuva', 82: 'Temporal', 95: 'Trovoadas', 96: 'Trovoadas com granizo', 99: 'Trovoadas com granizo' };
   const LAT = -9.97, LON = -67.81;

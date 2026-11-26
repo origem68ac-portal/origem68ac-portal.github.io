@@ -56,7 +56,7 @@
   const linkSeguro = u => { u = String(u || '').trim(); return /^(https?:\/\/|mailto:|tel:)/i.test(u) ? u : ''; };
   const youtubeId = u => { const m = String(u || '').match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/))([\w-]{11})/); return m ? m[1] : ''; };
 
-  const EDITORIAS = ['Rio Branco', 'Interior', 'Política', 'Economia', 'Amazônia', 'Saúde', 'Educação', 'Segurança', 'Esporte', 'Cultura', 'Negócios', 'Cidades', 'Brasil'];
+  const EDITORIAS = ['Rio Branco', 'Interior', 'Política', 'Economia', 'Amazônia', 'Saúde', 'Educação', 'Segurança', 'Esporte', 'Cultura', 'Negócios', 'Cidades', 'Brasil', 'Tecnologia', 'Curiosidades'];
   const MUNICIPIOS = ['Acrelândia', 'Assis Brasil', 'Brasiléia', 'Bujari', 'Capixaba', 'Cruzeiro do Sul', 'Epitaciolândia', 'Feijó', 'Jordão', 'Mâncio Lima', 'Manoel Urbano', 'Marechal Thaumaturgo', 'Plácido de Castro', 'Porto Acre', 'Porto Walter', 'Rio Branco', 'Rodrigues Alves', 'Santa Rosa do Purus', 'Sena Madureira', 'Senador Guiomard', 'Tarauacá', 'Xapuri'];
 
   /* ---------------- conteúdo de exemplo ---------------- */
@@ -128,17 +128,20 @@
     },
     async apagar(id) { demoGravar(demoLer().filter(n => n.id !== id)); },
     async enviarFoto(arquivo) { return reduzirImagem(arquivo, 1400, 0.78); },
+    async enviarArquivo(arquivo) { return reduzirImagem(arquivo, 600, 0.9); },
     async restaurarExemplos() { try { localStorage.removeItem(KEY); } catch (_) {} }
   };
 
-  function reduzirImagem(arquivo, max, q) {
+  // Reduz a foto no próprio navegador (fotos de celular chegam com vários MB)
+  function reduzirImagem(arquivo, max, q, comoBlob) {
     return new Promise((ok, erro) => {
       const img = new Image(), url = URL.createObjectURL(arquivo);
       img.onload = () => {
         const k = Math.min(1, max / Math.max(img.width, img.height));
         const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
         c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
-        ok(c.toDataURL('image/jpeg', q));
+        if (comoBlob) c.toBlob(b => b ? ok(b) : erro(new Error('Não foi possível preparar a foto.')), 'image/jpeg', q);
+        else ok(c.toDataURL('image/jpeg', q));
       };
       img.onerror = () => erro(new Error('Não foi possível ler essa imagem.'));
       img.src = url;
@@ -165,20 +168,28 @@
   const CAMPOS_LISTA = 'id,slug,titulo,linha_fina,editoria,municipio,foto_url,foto_credito,autor,posicao,publicado_em,corpo';
   const limpaBusca = q => String(q || '').replace(/[,()%*\\'"]/g, ' ').trim().slice(0, 80);
 
+  // Leitura pública direto na API (sem carregar a biblioteca do Supabase: o site abre bem mais rápido no celular)
+  const REST = String(cfg.supabaseUrl || '').replace(/\/$/, '') + '/rest/v1/';
+  async function rest(caminho, opcoes = {}) {
+    const r = await fetch(REST + caminho, { ...opcoes, headers: { apikey: cfg.supabaseChave, ...(opcoes.headers || {}) } });
+    if (!r.ok) { let m = ''; try { m = (await r.json()).message; } catch (_) {} throw new Error(traduzErro(m || 'Falha ao falar com o banco (' + r.status + ').')); }
+    return r.status === 204 ? null : r.json();
+  }
+  const enc = encodeURIComponent;
+  const PUB = 'status=eq.publicado&order=publicado_em.desc';
+
   const remoto = {
     async lista({ editoria, municipio, q, limite = 18, pular = 0 } = {}) {
-      const c = await cliente();
-      let r = c.from('noticias').select(CAMPOS_LISTA).eq('status', 'publicado');
-      if (editoria) r = r.eq('editoria', editoria);
-      if (municipio) r = r.eq('municipio', municipio);
-      const t = limpaBusca(q);
-      if (t) r = r.or(`titulo.ilike.%${t}%,linha_fina.ilike.%${t}%,corpo.ilike.%${t}%`);
-      const itens = ok(await r.order('publicado_em', { ascending: false }).range(pular, pular + limite));
+      let p = `noticias?select=${CAMPOS_LISTA}&${PUB}&offset=${pular}&limit=${limite + 1}`;
+      if (editoria) p += '&editoria=eq.' + enc(editoria);
+      if (municipio) p += '&municipio=eq.' + enc(municipio);
+      const t = limpaBusca(q).replace(/[.:]/g, ' ');
+      if (t) p += '&or=' + enc(`(titulo.ilike.*${t}*,linha_fina.ilike.*${t}*,corpo.ilike.*${t}*)`);
+      const itens = await rest(p);
       return { itens: itens.slice(0, limite), mais: itens.length > limite };
     },
     async blocos() {
-      const c = await cliente();
-      return Object.fromEntries(ok(await c.from('blocos').select('chave,dados')).map(b => [b.chave, b.dados]));
+      return Object.fromEntries((await rest('blocos?select=chave,dados')).map(b => [b.chave, b.dados]));
     },
     async salvarBloco(chave, dados) {
       const c = await cliente();
@@ -186,16 +197,18 @@
     },
     async apagarBloco(chave) { const c = await cliente(); ok(await c.from('blocos').delete().eq('chave', chave)); },
     async inscrever(email) {
-      const c = await cliente();
-      const { error } = await c.from('inscritos').insert({ email: String(email).trim().toLowerCase() });
-      if (error && !/duplicate key/i.test(error.message)) throw new Error('Não foi possível concluir a inscrição. Confira o e-mail.');
+      try {
+        await rest('inscritos', { method: 'POST', headers: { 'content-type': 'application/json', prefer: 'return=minimal' }, body: JSON.stringify({ email: String(email).trim().toLowerCase() }) });
+      } catch (e) {
+        if (!/duplicate key|já existe/i.test(e.message)) throw new Error('Não foi possível concluir a inscrição. Confira o e-mail.');
+      }
     },
     async inscritos() { const c = await cliente(); return ok(await c.from('inscritos').select('email,criado_em').order('criado_em', { ascending: false }).limit(5000)); },
     async roboVistos(limite = 60) { const c = await cliente(); return ok(await c.from('robo_vistos').select('*').order('criado_em', { ascending: false }).limit(limite)); },
-    async publicadas(limite = 30) { const c = await cliente(); return ok(await c.from('noticias').select(CAMPOS).eq('status', 'publicado').order('publicado_em', { ascending: false }).limit(limite)); },
-    async maisLidas(limite = 4) { const c = await cliente(); return ok(await c.from('noticias').select('slug,titulo,editoria').eq('status', 'publicado').gte('publicado_em', new Date(Date.now() - 7 * 864e5).toISOString()).order('leituras', { ascending: false }).limit(limite)); },
-    async porSlug(slug) { const c = await cliente(); return ok(await c.from('noticias').select(CAMPOS).eq('slug', slug).eq('status', 'publicado').maybeSingle()); },
-    async registrarLeitura(slug) { try { const c = await cliente(); await c.rpc('registrar_leitura', { p_slug: slug }); } catch (_) {} },
+    async publicadas(limite = 30) { return rest(`noticias?select=${CAMPOS_LISTA},fonte_nome&${PUB}&limit=${limite}`); },
+    async maisLidas(limite = 4) { return rest(`noticias?select=slug,titulo,editoria&status=eq.publicado&publicado_em=gte.${enc(new Date(Date.now() - 7 * 864e5).toISOString())}&order=leituras.desc&limit=${limite}`); },
+    async porSlug(slug) { return (await rest(`noticias?select=${CAMPOS}&status=eq.publicado&slug=eq.${enc(slug)}&limit=1`))[0] || null; },
+    async registrarLeitura(slug) { try { await rest('rpc/registrar_leitura', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ p_slug: slug }) }); } catch (_) {} },
     async entrar(email, senha) { const c = await cliente(); return ok(await c.auth.signInWithPassword({ email, password: senha })).user; },
     async sair() { const c = await cliente(); await c.auth.signOut(); },
     async sessao() { const c = await cliente(); const { data } = await c.auth.getSession(); return data.session ? data.session.user : null; },
@@ -207,11 +220,20 @@
       return ok(await c.from('noticias').insert(dados).select().single());
     },
     async apagar(id) { const c = await cliente(); ok(await c.from('noticias').delete().eq('id', id)); },
+    // Arquivos da marca (logo, ícone): sobem como estão, para manter o fundo transparente
+    async enviarArquivo(arquivo, pasta = 'marca') {
+      if (!/^image\/(png|webp|jpeg)$/.test(arquivo.type)) throw new Error('Use PNG (de preferência com fundo transparente), WebP ou JPG.');
+      const c = await cliente();
+      const ext = { 'image/png': 'png', 'image/webp': 'webp', 'image/jpeg': 'jpg' }[arquivo.type];
+      const caminho = `${pasta}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      ok(await c.storage.from('fotos').upload(caminho, arquivo, { cacheControl: '31536000', upsert: false, contentType: arquivo.type }));
+      return c.storage.from('fotos').getPublicUrl(caminho).data.publicUrl;
+    },
     async enviarFoto(arquivo) {
       const c = await cliente();
-      const ext = (arquivo.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
-      const caminho = `${new Date().toISOString().slice(0, 7)}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-      ok(await c.storage.from('fotos').upload(caminho, arquivo, { cacheControl: '31536000', upsert: false }));
+      const caminho = `${new Date().toISOString().slice(0, 7)}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`;
+      const foto = await reduzirImagem(arquivo, 1600, 0.82, true);
+      ok(await c.storage.from('fotos').upload(caminho, foto, { cacheControl: '31536000', upsert: false, contentType: 'image/jpeg' }));
       return c.storage.from('fotos').getPublicUrl(caminho).data.publicUrl;
     }
   };

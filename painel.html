@@ -9,9 +9,10 @@
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://vsfheoticrdosunjmhvo.supabase.co" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
-  <script src="assets/js/tema.js?v=3"></script>
-  <link rel="stylesheet" href="assets/css/style.css?v=7">
+  <script src="assets/js/tema.js?v=11"></script>
+  <link rel="stylesheet" href="assets/css/style.css?v=11">
   <style>
     body { min-height: 100vh; }
     .p-top { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 14px; height: 68px; padding: 0 clamp(16px, 3vw, 28px); border-bottom: 1px solid var(--line); background: rgba(var(--bgc), .85); backdrop-filter: blur(14px); }
@@ -103,6 +104,10 @@
     .p-tabela th { text-align: left; font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--dim); font-weight: 600; padding: 8px 10px; border-bottom: 1px solid var(--line-2); }
     .p-tabela td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
     .p-tabela td a { color: var(--accent-text); }
+    .in--cor { height: 48px; padding: 4px; cursor: pointer; }
+    .marca-prev { height: 90px; border-radius: 12px; border: 1px dashed var(--line-2); display: grid; place-items: center; color: var(--dim); font-size: 13px; background: repeating-conic-gradient(rgba(var(--fg),.06) 0 25%, transparent 0 50%) 0 0 / 16px 16px; margin-bottom: 8px; overflow: hidden; }
+    .marca-prev img { max-height: 80px; max-width: 90%; object-fit: contain; }
+    .marca-prev--ico { width: 90px; }
     .st--robo { background: rgba(80,140,255,.16); color: #5b8def; }
     .st--desc { background: rgba(229,83,61,.12); color: #e5533d; }
     [hidden] { display: none !important; }
@@ -188,7 +193,7 @@
           <div class="f">
             <label for="editoria">Editoria</label>
             <select class="in" id="editoria">
-              <option>Rio Branco</option><option>Interior</option><option>Política</option><option>Economia</option><option>Amazônia</option><option>Saúde</option><option>Educação</option><option>Segurança</option><option>Esporte</option><option>Cultura</option><option>Negócios</option><option>Cidades</option><option>Brasil</option>
+              <option>Rio Branco</option><option>Interior</option><option>Política</option><option>Economia</option><option>Amazônia</option><option>Saúde</option><option>Educação</option><option>Segurança</option><option>Esporte</option><option>Cultura</option><option>Negócios</option><option>Cidades</option><option>Brasil</option><option>Tecnologia</option><option>Curiosidades</option>
             </select>
           </div>
           <div class="f">
@@ -264,6 +269,38 @@
   <main class="p-cfg" data-aba-view="site" hidden>
     <h1>Capa e site</h1>
     <p class="sub">Tudo o que aparece no site além das notícias. Cada bloco tem seu botão de salvar. Clima e qualidade do ar são automáticos.</p>
+
+    <form class="p-card" data-bloco="marca">
+      <h2>Marca <small>nome, logo, cores e tema do site</small></h2>
+      <div class="grid3">
+        <div class="f"><label>Nome — parte 1</label><input class="in" name="nome1" placeholder="ORIGEM"></div>
+        <div class="f"><label>Nome — parte 2 (em destaque)</label><input class="in" name="nome2" placeholder="68"></div>
+        <div class="f"><label>Frase abaixo do nome</label><input class="in" name="tagline" placeholder="Portal de notícias do Acre"></div>
+      </div>
+      <div class="grid4">
+        <div class="f"><label>Cor principal</label><input class="in in--cor" type="color" name="cor1" value="#ff5d0a"></div>
+        <div class="f"><label>Cor de apoio</label><input class="in in--cor" type="color" name="cor2" value="#fbb931"></div>
+        <div class="f"><label>Tema ao abrir</label><select class="in" name="tema"><option value="dark">Escuro</option><option value="light">Claro</option></select></div>
+        <div class="f"><label>&nbsp;</label><button type="button" class="btn btn--ghost btn--sm" data-cores-padrao>Voltar às cores originais</button></div>
+      </div>
+      <div class="grid2">
+        <div class="f">
+          <label>Logo em imagem (opcional)</label>
+          <div class="marca-prev" data-prev="logo_url">Sem imagem: usa o nome acima</div>
+          <div class="foto__btns"><label class="btn btn--ghost btn--sm" style="cursor:pointer">Enviar logo<input type="file" accept="image/png,image/webp,image/jpeg" data-subir="logo_url" hidden></label><button type="button" class="btn btn--ghost btn--sm" data-tirar="logo_url">Remover</button></div>
+          <small>PNG com fundo transparente, na horizontal (ex.: 600 × 160).</small>
+          <input type="hidden" name="logo_url">
+        </div>
+        <div class="f">
+          <label>Ícone da aba do navegador (opcional)</label>
+          <div class="marca-prev marca-prev--ico" data-prev="favicon_url">Padrão</div>
+          <div class="foto__btns"><label class="btn btn--ghost btn--sm" style="cursor:pointer">Enviar ícone<input type="file" accept="image/png,image/webp" data-subir="favicon_url" hidden></label><button type="button" class="btn btn--ghost btn--sm" data-tirar="favicon_url">Remover</button></div>
+          <small>PNG quadrado, 512 × 512.</small>
+          <input type="hidden" name="favicon_url">
+        </div>
+      </div>
+      <div class="p-save"><button class="btn btn--primary btn--sm">Salvar marca</button><span class="msg"></span><small>O tema escolhido vale para quem nunca trocou o tema no botão ☀/☾.</small></div>
+    </form>
 
     <form class="p-card" data-bloco="pulso">
       <h2>Pulso do dia <small>faixa abaixo da manchete</small></h2>
@@ -392,8 +429,8 @@
   </main>
 </div>
 
-<script src="assets/js/config.js?v=3"></script>
-<script src="assets/js/dados.js?v=3"></script>
+<script src="assets/js/config.js?v=11"></script>
+<script src="assets/js/dados.js?v=11"></script>
 <script>
 (function () {
   const { api, modo, util } = window.O68;
@@ -515,7 +552,7 @@
   }
   $('[data-foto-arquivo]').addEventListener('change', async e => {
     const f = e.target.files[0]; e.target.value = ''; if (!f) return;
-    if (f.size > 5 * 1024 * 1024) return msg('A foto passa de 5 MB. Reduza antes de enviar.', 'err');
+    if (f.size > 25 * 1024 * 1024) return msg('A foto passa de 25 MB. Escolha outra.', 'err'); // o painel reduz antes de enviar
     msg('Enviando foto…');
     try { setFoto(await api.enviarFoto(f)); sujo = true; msg('Foto pronta.', 'ok'); }
     catch (err) { msg(err.message, 'err'); }
@@ -559,6 +596,7 @@
     n.municipio = n.municipio || null; n.foto_url = fotoUrl || null; n.status = acao;
     n.fonte_nome = n.fonte_nome || null; n.fonte_url = n.fonte_url || null;
     if (acao === 'publicado' && !n.corpo) return msg('Escreva o texto antes de publicar.', 'err');
+    if (acao === 'publicado' && !fotoUrl && !confirm('Esta notícia está sem foto. Publicar mesmo assim? (Sem foto, a capa usa um fundo ilustrativo.)')) return;
     if (acao === 'publicado' && atual && atual.status !== 'publicado') n.publicado_em = null; // publica agora
     $$('[data-acao]').forEach(b => b.disabled = true); msg(acao === 'publicado' ? 'Publicando…' : 'Salvando…');
     try {
@@ -580,6 +618,6 @@
   iniciar();
 })();
 </script>
-<script src="assets/js/painel-site.js?v=2"></script>
+<script src="assets/js/painel-site.js?v=11"></script>
 </body>
 </html>

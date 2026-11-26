@@ -13,10 +13,23 @@
   const mun = $('[data-municipios]');
   if (mun) mun.innerHTML = ORDEM.map(m => `<a class="chip" href="lista.html?municipio=${encodeURIComponent(m)}">${esc(m)}</a>`).join('');
 
-  let todas = [], lidas = [];
-  try { [todas, lidas] = await Promise.all([api.publicadas(40), api.maisLidas(4)]); }
-  catch (e) { console.error(e); }
+  // Capa guardada da última visita: aparece na hora e é atualizada assim que o banco responde
+  const CK = 'o68-capa';
+  let guardada = null;
+  try { guardada = JSON.parse(localStorage.getItem(CK)); } catch (_) {}
+  if (guardada && Date.now() - guardada.t < 24 * 3600e3 && guardada.todas.length) desenhar(guardada.todas, guardada.lidas);
 
+  let todas = [], lidas = [];
+  try {
+    [todas, lidas] = await Promise.all([api.publicadas(40), api.maisLidas(4)]);
+    try { localStorage.setItem(CK, JSON.stringify({ t: Date.now(), todas: todas.map(({ corpo, ...n }) => ({ ...n, corpo: String(corpo || '').slice(0, 1200) })), lidas })); } catch (_) {}
+  } catch (e) {
+    console.error(e);
+    if (guardada) ({ todas, lidas } = guardada);
+  }
+  desenhar(todas, lidas);
+
+  function desenhar(todas, lidas) {
   // ---------- manchete, destaque e últimas ----------
   const usados = new Set();
   const pega = cond => { const n = todas.find(x => !usados.has(x) && cond(x)); if (n) usados.add(n); return n; };
@@ -87,6 +100,7 @@
     track.closest('.ticker').hidden = !todas.length;
   }
   fim();
+  } // fim de desenhar()
 
   // ---------- blocos editáveis ----------
   const b = await blocosP;
