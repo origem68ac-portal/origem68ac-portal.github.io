@@ -47,8 +47,10 @@
 
   // Sem foto: mancha de luz laranja, sempre a mesma para a mesma notícia
   const phVariante = slug => 'ph--' + (1 + [...String(slug)].reduce((a, c) => a + c.charCodeAt(0), 0) % 6);
+  // Fotos servidas já reduzidas e comprimidas (WebP ~1000 px) pelo wsrv.nl; se falhar, carrega a original
+  const fotoLeve = (url, w = 1000) => /^https?:\/\//.test(url || '') ? `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${w}&q=72&output=webp` : url;
   function fotoHTML(n, extra = '') {
-    const img = n.foto_url ? `<img src="${esc(n.foto_url)}" alt="" loading="lazy">` : '';
+    const img = n.foto_url ? `<img src="${esc(fotoLeve(n.foto_url))}" alt="" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${esc(n.foto_url)}'">` : '';
     return `<div class="ph ${n.foto_url ? 'has-img' : phVariante(n.slug)}" data-credit="${esc(n.foto_credito || '')}">${img}${extra}</div>`;
   }
 
