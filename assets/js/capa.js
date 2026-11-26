@@ -29,6 +29,25 @@
   }
   desenhar(todas, lidas);
 
+  // Atualização automática: confere notícias novas a cada minuto (e ao voltar para a aba), sem recarregar a página
+  const assinatura = (t, l) => t.slice(0, 20).map(n => n.id + n.titulo + n.posicao + (n.foto_url || '')).join('|') + '#' + l.map(n => n.slug).join('|');
+  let atual = assinatura(todas, lidas), checando = false;
+  async function conferir() {
+    if (document.hidden || checando) return;
+    checando = true;
+    try {
+      const [t, l] = await Promise.all([api.publicadas(40), api.maisLidas(4)]);
+      const nova = assinatura(t, l);
+      if (nova !== atual) {
+        atual = nova; todas = t; lidas = l; desenhar(t, l);
+        try { localStorage.setItem(CK, JSON.stringify({ t: Date.now(), todas: t.map(({ corpo, ...n }) => ({ ...n, corpo: String(corpo || '').slice(0, 1200) })), lidas: l })); } catch (_) {}
+      }
+    } catch (_) { /* sem conexão: tenta na próxima */ }
+    checando = false;
+  }
+  setInterval(conferir, 60e3);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) conferir(); });
+
   function desenhar(todas, lidas) {
   // ---------- manchete, destaque e últimas ----------
   const usados = new Set();
@@ -67,7 +86,7 @@
     <div class="meta"><span>${esc(n.editoria)}</span><span>${tempoRelativo(n.publicado_em)}</span></div>`);
 
   const resto = todas.filter(n => !usados.has(n));
-  for (let i = 1; i <= 9; i++) {
+  for (let i = 1; i <= 11; i++) {
     const n = resto[i - 1], el = document.querySelector(`[data-card="u${i}"]`);
     if (!el) continue;
     if (el.classList.contains('card--row')) {

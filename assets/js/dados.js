@@ -113,6 +113,8 @@
     async inscritos() { return []; },
     async roboVistos() { return []; },
     async ofertas() { return []; },
+    registrarVisita() {},
+    async estatisticas() { throw new Error('A visão geral só funciona conectada ao banco.'); },
     async registrarClique() {},
     async todasOfertas() { return []; },
     async salvarOferta() { throw new Error('Ofertas só funcionam conectadas ao banco.'); },
@@ -212,6 +214,22 @@
     },
     async inscritos() { const c = await cliente(); return ok(await c.from('inscritos').select('email,criado_em').order('criado_em', { ascending: false }).limit(5000)); },
     async roboVistos(limite = 60) { const c = await cliente(); return ok(await c.from('robo_vistos').select('*').order('criado_em', { ascending: false }).limit(limite)); },
+    // ---------- estatísticas ----------
+    registrarVisita(pagina) {
+      try { fetch(REST + 'rpc/registrar_visita', { method: 'POST', keepalive: true, headers: { apikey: cfg.supabaseChave, 'content-type': 'application/json' }, body: JSON.stringify({ p_pagina: pagina }) }); } catch (_) {}
+    },
+    async estatisticas(desdeISO) {
+      const c = await cliente(), dia = desdeISO.slice(0, 10);
+      const [noticias, leituras, visitas, robo, inscritos, ofertas] = await Promise.all([
+        c.from('noticias').select('id,titulo,slug,status,origem,editoria,municipio,leituras,publicado_em,criado_em,foto_url,autor').order('criado_em', { ascending: false }).limit(5000),
+        c.from('leituras_dia').select('dia,noticia_id,n').gte('dia', dia).limit(20000),
+        c.from('visitas_dia').select('dia,pagina,n').gte('dia', dia).limit(5000),
+        c.from('robo_vistos').select('decisao,fonte,criado_em').gte('criado_em', desdeISO).limit(10000),
+        c.from('inscritos').select('criado_em').limit(20000),
+        c.from('ofertas').select('titulo,loja,cliques,ativo').order('cliques', { ascending: false }).limit(200)
+      ].map(p => p.then(ok)));
+      return { noticias, leituras, visitas, robo, inscritos, ofertas };
+    },
     // ---------- ofertas (links de afiliado) ----------
     async ofertas(limite = 60) { return rest(`ofertas?select=id,titulo,descricao,preco,preco_antigo,loja,link,imagem_url,destaque&ativo=eq.true&order=destaque.desc,ordem.asc,criado_em.desc&limit=${limite}`); },
     registrarClique(id) {

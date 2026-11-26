@@ -133,6 +133,17 @@
     if (sobre && s.sobre) sobre.textContent = s.sobre;
   });
 
+  /* ---------- Estatísticas: visita da página e visitante único do dia ---------- */
+  const pg = location.pathname.replace(/\.html$/, '').split('/').pop() || 'index';
+  const tipo = { '': 'capa', index: 'capa', artigo: 'materia', lista: 'lista', ofertas: 'ofertas', pagina: 'pagina' }[pg];
+  if (tipo) {
+    api.registrarVisita(tipo);
+    try {
+      const hoje = new Date().toLocaleDateString('sv', { timeZone: 'America/Rio_Branco' });
+      if (localStorage.getItem('o68-visitante') !== hoje) { localStorage.setItem('o68-visitante', hoje); api.registrarVisita('visitante'); }
+    } catch (_) {}
+  }
+
   /* ---------- Busca ---------- */
   const fb = $('[data-search-form]');
   if (fb) fb.addEventListener('submit', e => {

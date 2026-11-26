@@ -162,9 +162,19 @@
   // aproveitar notícia barrada: o robô escreve a matéria e ela abre como rascunho no editor
   $('[data-robo-lista]').addEventListener('click', async e => {
     const b = e.target.closest('[data-forcar]'); if (!b) return;
-    b.disabled = true; b.textContent = 'Escrevendo…'; roboMsg('O robô está escrevendo a matéria (leva até 1 minuto)…');
-    try { const d = await comandoRobo('/forcar', { url: b.dataset.forcar }); location.href = 'painel.html?abrir=' + encodeURIComponent(d.id); }
-    catch (err) { roboMsg(err.message, 'err'); b.disabled = false; b.textContent = 'Aproveitar'; window.scrollTo(0, 0); }
+    $$('[data-forcar]').forEach(x => { x.disabled = true; }); b.textContent = 'Escrevendo…';
+    const t0 = Date.now();
+    const relogio = setInterval(() => { b.textContent = `Escrevendo… ${Math.round((Date.now() - t0) / 1000)}s`; }, 1000);
+    roboMsg('O robô está lendo a fonte, escrevendo a matéria e preparando a imagem. Costuma levar de 10 a 40 segundos.');
+    window.scrollTo(0, 0);
+    try {
+      const d = await comandoRobo('/forcar', { url: b.dataset.forcar });
+      clearInterval(relogio); roboMsg('Pronto! Abrindo o rascunho…', 'ok');
+      location.href = 'painel.html?abrir=' + encodeURIComponent(d.id);
+    } catch (err) {
+      clearInterval(relogio); roboMsg(err.message, 'err');
+      $$('[data-forcar]').forEach(x => { x.disabled = false; }); b.textContent = 'Aproveitar';
+    }
   });
 
   /* ---------- inscritos ---------- */
