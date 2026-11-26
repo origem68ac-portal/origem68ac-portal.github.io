@@ -124,20 +124,20 @@
     const box = $('[data-robo-lista]');
     try {
       const l = await api.roboVistos(80);
-      box.innerHTML = l.length ? `<table><thead><tr><th>Quando</th><th>Fonte</th><th>Notícia</th><th>Decisão</th><th>Motivo</th></tr></thead><tbody>${l.map(x => {
+      box.innerHTML = l.length ? `<table><thead><tr><th>Quando</th><th>Fonte</th><th>Notícia</th><th>Decisão</th><th>Motivo</th><th></th></tr></thead><tbody>${l.map(x => {
         const [cls, txt] = DECISAO[x.decisao] || ['st--ras', x.decisao || ''];
         const url = util.linkSeguro(x.url);
-        return `<tr><td style="white-space:nowrap">${util.dataHora(x.criado_em)}</td><td>${util.esc(x.fonte)}</td><td>${url ? `<a href="${util.esc(url)}" target="_blank" rel="noopener">${util.esc(x.titulo)}</a>` : util.esc(x.titulo)}</td><td><span class="st ${cls}">${txt}</span></td><td>${util.esc(x.motivo || '')}</td></tr>`;
+        return `<tr><td style="white-space:nowrap">${util.dataHora(x.criado_em)}</td><td>${util.esc(x.fonte)}</td><td>${url ? `<a href="${util.esc(url)}" target="_blank" rel="noopener">${util.esc(x.titulo)}</a>` : util.esc(x.titulo)}</td><td><span class="st ${cls}">${txt}</span></td><td>${util.esc(x.motivo || '')}</td><td>${(x.decisao === 'descartado' || x.decisao === 'erro') && url ? `<button type="button" class="btn btn--ghost btn--sm" data-forcar="${util.esc(url)}" style="white-space:nowrap">Aproveitar</button>` : ''}</td></tr>`;
       }).join('')}</tbody></table>` : '<p class="empty">O robô ainda não rodou.</p>';
     } catch (e) { box.innerHTML = `<p class="empty">${util.esc(e.message)}</p>`; }
   }
 
   // comandos para o robô (Cloudflare Worker), autenticados com a sessão do editor
-  async function comandoRobo(caminho) {
+  async function comandoRobo(caminho, corpo) {
     const base = (window.O68_CONFIG || {}).roboUrl;
     if (!base) throw new Error('O endereço do robô ainda não foi configurado.');
     const token = await api.token();
-    const r = await fetch(base.replace(/\/$/, '') + caminho, { method: 'POST', headers: { authorization: 'Bearer ' + token } });
+    const r = await fetch(base.replace(/\/$/, '') + caminho, { method: 'POST', headers: { authorization: 'Bearer ' + token, 'content-type': 'application/json' }, body: corpo ? JSON.stringify(corpo) : undefined });
     const d = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(d.erro || 'O robô não respondeu.');
     return d;
@@ -157,6 +157,14 @@
     roboMsg('Conectando…');
     try { const d = await comandoRobo('/telegram'); roboMsg(`Telegram conectado${d.nome ? ' (' + d.nome + ')' : ''}. Veja a mensagem de teste.`, 'ok'); }
     catch (err) { roboMsg(err.message, 'err'); }
+  });
+
+  // aproveitar notícia barrada: o robô escreve a matéria e ela abre como rascunho no editor
+  $('[data-robo-lista]').addEventListener('click', async e => {
+    const b = e.target.closest('[data-forcar]'); if (!b) return;
+    b.disabled = true; b.textContent = 'Escrevendo…'; roboMsg('O robô está escrevendo a matéria (leva até 1 minuto)…');
+    try { const d = await comandoRobo('/forcar', { url: b.dataset.forcar }); location.href = 'painel.html?abrir=' + encodeURIComponent(d.id); }
+    catch (err) { roboMsg(err.message, 'err'); b.disabled = false; b.textContent = 'Aproveitar'; window.scrollTo(0, 0); }
   });
 
   /* ---------- inscritos ---------- */

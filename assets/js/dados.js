@@ -112,6 +112,11 @@
     async inscrever() {},
     async inscritos() { return []; },
     async roboVistos() { return []; },
+    async ofertas() { return []; },
+    async registrarClique() {},
+    async todasOfertas() { return []; },
+    async salvarOferta() { throw new Error('Ofertas só funcionam conectadas ao banco.'); },
+    async apagarOferta() {},
     async publicadas(limite = 30) { return demoLer().filter(n => n.status === 'publicado').sort(porData).slice(0, limite); },
     async maisLidas(limite = 4) { return demoLer().filter(n => n.status === 'publicado').sort((a, b) => b.leituras - a.leituras).slice(0, limite); },
     async porSlug(slug) { return demoLer().find(n => n.slug === slug && n.status === 'publicado') || null; },
@@ -207,6 +212,19 @@
     },
     async inscritos() { const c = await cliente(); return ok(await c.from('inscritos').select('email,criado_em').order('criado_em', { ascending: false }).limit(5000)); },
     async roboVistos(limite = 60) { const c = await cliente(); return ok(await c.from('robo_vistos').select('*').order('criado_em', { ascending: false }).limit(limite)); },
+    // ---------- ofertas (links de afiliado) ----------
+    async ofertas(limite = 60) { return rest(`ofertas?select=id,titulo,descricao,preco,preco_antigo,loja,link,imagem_url,destaque&ativo=eq.true&order=destaque.desc,ordem.asc,criado_em.desc&limit=${limite}`); },
+    registrarClique(id) {
+      try { fetch(REST + 'rpc/registrar_clique_oferta', { method: 'POST', keepalive: true, headers: { apikey: cfg.supabaseChave, 'content-type': 'application/json' }, body: JSON.stringify({ p_id: id }) }); } catch (_) {}
+    },
+    async todasOfertas() { const c = await cliente(); return ok(await c.from('ofertas').select('*').order('destaque', { ascending: false }).order('ordem').order('criado_em', { ascending: false }).limit(500)); },
+    async salvarOferta(o) {
+      const c = await cliente(); const { id, cliques, criado_em, ...dados } = o;
+      dados.atualizado_em = new Date().toISOString();
+      if (id) return ok(await c.from('ofertas').update(dados).eq('id', id).select().single());
+      return ok(await c.from('ofertas').insert(dados).select().single());
+    },
+    async apagarOferta(id) { const c = await cliente(); ok(await c.from('ofertas').delete().eq('id', id)); },
     async publicadas(limite = 30) { return rest(`noticias?select=${CAMPOS_LISTA},fonte_nome&${PUB}&limit=${limite}`); },
     async maisLidas(limite = 4) { return rest(`noticias?select=slug,titulo,editoria&status=eq.publicado&publicado_em=gte.${enc(new Date(Date.now() - 7 * 864e5).toISOString())}&order=leituras.desc&limit=${limite}`); },
     async porSlug(slug) { return (await rest(`noticias?select=${CAMPOS}&status=eq.publicado&slug=eq.${enc(slug)}&limit=1`))[0] || null; },
@@ -224,9 +242,9 @@
     async apagar(id) { const c = await cliente(); ok(await c.from('noticias').delete().eq('id', id)); },
     // Arquivos da marca (logo, ícone): sobem como estão, para manter o fundo transparente
     async enviarArquivo(arquivo, pasta = 'marca') {
-      if (!/^image\/(png|webp|jpeg)$/.test(arquivo.type)) throw new Error('Use PNG (de preferência com fundo transparente), WebP ou JPG.');
+      if (!/^image\/(png|webp|jpeg|gif)$/.test(arquivo.type)) throw new Error('Use PNG, WebP, JPG ou GIF.');
       const c = await cliente();
-      const ext = { 'image/png': 'png', 'image/webp': 'webp', 'image/jpeg': 'jpg' }[arquivo.type];
+      const ext = { 'image/png': 'png', 'image/webp': 'webp', 'image/jpeg': 'jpg', 'image/gif': 'gif' }[arquivo.type];
       const caminho = `${pasta}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
       ok(await c.storage.from('fotos').upload(caminho, arquivo, { cacheControl: '31536000', upsert: false, contentType: arquivo.type }));
       return c.storage.from('fotos').getPublicUrl(caminho).data.publicUrl;

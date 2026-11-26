@@ -101,6 +101,30 @@
       const li = a.closest('li');
       (li || a).hidden = !existe && !temLink;
     });
+    /* ---------- Anúncios (painel → Anúncios) ---------- */
+    const ads = b.anuncios || {};
+    $$('[data-ad]').forEach(box => {
+      const a = ads[box.dataset.ad]; if (!a || !a.modo || a.modo === 'padrao') return;
+      if (a.modo === 'oculto') { box.hidden = true; return; }
+      const slot = $('.ad__slot', box); if (!slot) return;
+      if (a.modo === 'imagem' && util.linkSeguro(a.img)) {
+        const link = util.linkSeguro(a.link);
+        const el = document.createElement(link ? 'a' : 'div');
+        el.className = slot.className + ' ad__slot--img';
+        if (link) { el.href = link; el.target = '_blank'; el.rel = 'sponsored noopener'; }
+        const m = util.linkSeguro(a.img_m);
+        el.innerHTML = `<picture>${m ? `<source media="(max-width: 720px)" srcset="${util.esc(m)}">` : ''}<img src="${util.esc(a.img)}" alt="${util.esc(a.alt || 'Publicidade')}" loading="lazy"></picture>`;
+        slot.replaceWith(el);
+      } else if (a.modo === 'codigo' && a.codigo) {
+        // código de rede de anúncios (ex.: AdSense): os <script> precisam ser recriados para rodar
+        const el = document.createElement('div'); el.className = slot.className + ' ad__slot--cod';
+        slot.replaceWith(el);
+        try { el.appendChild(document.createRange().createContextualFragment(a.codigo)); } catch (e) { console.error('anúncio', e); }
+      }
+    });
+    // faixas de anúncio sem nenhum anúncio visível somem
+    $$('.ad-band').forEach(band => { const v = $$('[data-ad]', band); if (v.length && v.every(x => x.hidden)) band.hidden = true; });
+
     // colunas do rodapé sem nenhum link visível somem
     $$('.footer__grid ul').forEach(ul => { ul.parentElement.hidden = ![...ul.children].some(li => !li.hidden); });
     const aviso = $('[data-site-aviso]');

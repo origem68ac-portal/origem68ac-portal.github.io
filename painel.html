@@ -11,8 +11,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://vsfheoticrdosunjmhvo.supabase.co" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
-  <script src="assets/js/tema.js?v=12"></script>
-  <link rel="stylesheet" href="assets/css/style.css?v=12">
+  <script src="assets/js/tema.js?v=13"></script>
+  <link rel="stylesheet" href="assets/css/style.css?v=13">
   <style>
     body { min-height: 100vh; }
     .p-top { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 14px; height: 68px; padding: 0 clamp(16px, 3vw, 28px); border-bottom: 1px solid var(--line); background: rgba(var(--bgc), .85); backdrop-filter: blur(14px); }
@@ -151,6 +151,8 @@
     <nav class="p-nav" data-abas>
       <button class="is-on" data-aba="noticias">Notícias</button>
       <button data-aba="site">Capa e site</button>
+      <button data-aba="anuncios">Anúncios</button>
+      <button data-aba="ofertas">Ofertas</button>
       <button data-aba="robo">Robô</button>
       <button data-aba="inscritos">Inscritos</button>
     </nav>
@@ -391,6 +393,50 @@
     </form>
   </main>
 
+  <!-- ========== ANÚNCIOS ========== -->
+  <main class="p-cfg" data-aba-view="anuncios" hidden>
+    <h1>Anúncios</h1>
+    <p class="sub">Escolha o que aparece em cada espaço de publicidade do site: a chamada padrão “Anuncie aqui”, a imagem de um anunciante (com link), um código de rede de anúncios (ex.: Google AdSense) ou nada. As imagens prontas de “Anuncie aqui” estão na pasta <b>marca</b> do computador.</p>
+    <form data-anuncios-form>
+      <div data-anuncios-lista></div>
+      <div class="actions"><button class="btn btn--primary">Salvar anúncios <span class="btn__arrow"><svg><use href="#i-arrow"/></svg></span></button><span class="msg grow" data-anuncios-msg></span></div>
+    </form>
+  </main>
+
+  <!-- ========== OFERTAS ========== -->
+  <main class="p-cfg" data-aba-view="ofertas" hidden>
+    <h1>Ofertas</h1>
+    <p class="sub">Produtos com seus links de afiliado (Mercado Livre, Shopee, TikTok Shop, Amazon…). Aparecem na página <a href="ofertas.html" target="_blank" style="color:var(--accent-text)">Ofertas</a> e, as primeiras 4, num bloco da capa. Ofertas em destaque vêm primeiro.</p>
+    <form class="p-card" data-oferta-form>
+      <h2 data-oferta-titulo>Nova oferta</h2>
+      <div class="f"><label>Link de afiliado</label>
+        <div style="display:flex;gap:8px"><input class="in" name="link" type="url" required placeholder="https://mercadolivre.com/sec/…"><button type="button" class="btn btn--ghost btn--sm" data-oferta-buscar style="white-space:nowrap">Buscar dados do link</button></div>
+        <small>Cole o link e clique em “Buscar dados” para tentar puxar nome e foto do produto (funciona melhor com Mercado Livre e Amazon).</small></div>
+      <div class="grid2">
+        <div class="f"><label>Nome do produto</label><input class="in" name="titulo" required maxlength="200"></div>
+        <div class="f"><label>Loja</label>
+          <select class="in" name="loja"><option>Mercado Livre</option><option>Shopee</option><option>TikTok Shop</option><option>Amazon</option><option>Magalu</option><option>AliExpress</option><option>Shein</option><option>Outra</option></select></div>
+      </div>
+      <div class="grid3">
+        <div class="f"><label>Preço</label><input class="in" name="preco" placeholder="R$ 149,90"></div>
+        <div class="f"><label>Preço antigo (opcional)</label><input class="in" name="preco_antigo" placeholder="R$ 199,90"></div>
+        <div class="f"><label>Ordem</label><input class="in" name="ordem" type="number" value="0"><small>Menor aparece antes.</small></div>
+      </div>
+      <div class="f"><label>Descrição curta (opcional)</label><input class="in" name="descricao" maxlength="200" placeholder="Ex.: frete grátis, 12x sem juros"></div>
+      <div class="grid2">
+        <div class="f"><label>Foto do produto</label>
+          <div class="marca-prev" data-oferta-prev>Sem foto</div>
+          <div class="foto__btns"><label class="btn btn--ghost btn--sm" style="cursor:pointer">Enviar foto<input type="file" accept="image/png,image/webp,image/jpeg,image/gif" data-oferta-foto hidden></label></div>
+          <input class="in" name="imagem_url" placeholder="…ou cole o endereço da imagem (https://…)" style="margin-top:8px"></div>
+        <div class="f"><label>Opções</label>
+          <label style="display:flex;gap:8px;align-items:center;font-weight:500"><input type="checkbox" name="destaque"> Em destaque (aparece primeiro e na capa)</label>
+          <label style="display:flex;gap:8px;align-items:center;font-weight:500"><input type="checkbox" name="ativo" checked> No ar</label></div>
+      </div>
+      <div class="p-save"><button class="btn btn--primary btn--sm">Salvar oferta</button><button type="button" class="btn btn--ghost btn--sm" data-oferta-nova>Nova</button><button type="button" class="btn btn--danger btn--sm" data-oferta-apagar hidden>Apagar</button><span class="msg" data-oferta-msg></span></div>
+    </form>
+    <div class="p-card"><h2>Suas ofertas</h2><div class="p-tabela" data-ofertas-lista><p class="empty">Carregando…</p></div></div>
+  </main>
+
   <!-- ========== ROBÔ ========== -->
   <main class="p-cfg" data-aba-view="robo" hidden>
     <h1>Robô de notícias</h1>
@@ -429,8 +475,8 @@
   </main>
 </div>
 
-<script src="assets/js/config.js?v=12"></script>
-<script src="assets/js/dados.js?v=12"></script>
+<script src="assets/js/config.js?v=13"></script>
+<script src="assets/js/dados.js?v=13"></script>
 <script>
 (function () {
   const { api, modo, util } = window.O68;
@@ -618,6 +664,7 @@
   iniciar();
 })();
 </script>
-<script src="assets/js/painel-site.js?v=12"></script>
+<script src="assets/js/painel-site.js?v=13"></script>
+<script src="assets/js/painel-extra.js?v=13"></script>
 </body>
 </html>

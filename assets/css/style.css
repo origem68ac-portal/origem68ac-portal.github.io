@@ -220,6 +220,11 @@ a.ad__slot:hover { border-color: var(--orange); color: var(--text); }
 .ad--inline { margin: 2em 0; }
 .prose .ad__slot { text-decoration: none; color: var(--dim); font-size: 13px; }
 .stack .ad { margin-top: 18px; }
+/* anúncio veiculado (imagem ou código enviado pelo painel) */
+.ad__slot--img, .ad__slot--cod { border: 0; border-radius: 10px; background: transparent; }
+.ad__slot--img img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.ad__slot--cod { height: auto !important; min-height: 50px; display: block; }
+.prose .ad__slot--img { text-decoration: none; }
 
 /* ---------- Tags ---------- */
 .tag { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: var(--pill); font-size: 11.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; border: 1px solid var(--line-2); color: var(--text); background: rgba(var(--bgc), .35); backdrop-filter: blur(8px); }
@@ -426,6 +431,34 @@ html { overflow-x: clip; }
 .list-grid { row-gap: 36px; }
 .list-empty { color: var(--muted); padding: 24px 0; }
 .list-more { display: flex; justify-content: center; margin-top: 36px; }
+/* ---------- Ofertas (links de afiliado) ---------- */
+.ofertas-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.oferta { display: flex; flex-direction: column; border-radius: var(--radius); overflow: hidden; background: var(--card); border: 1px solid var(--line); transition: transform .25s, border-color .25s; }
+.oferta:hover { transform: translateY(-4px); border-color: rgba(255,93,10,.5); }
+.oferta--destaque { border-color: rgba(251,185,49,.55); box-shadow: 0 0 0 1px rgba(251,185,49,.25); }
+.oferta__img { aspect-ratio: 1; background: #fff; display: grid; place-items: center; overflow: hidden; }
+.oferta__img img { width: 100%; height: 100%; object-fit: contain; padding: 10px; }
+.oferta__img span { font-family: var(--f-logo); font-weight: 800; font-size: 64px; color: rgba(23,16,12,.12); }
+.oferta__corpo { padding: 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.oferta__corpo h3 { font-size: 16px; line-height: 1.25; font-weight: 600; letter-spacing: -0.01em; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.oferta__corpo p { font-size: 13px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.oferta__preco { margin-top: auto; display: flex; flex-direction: column; }
+.oferta__preco s { font-size: 13px; color: var(--dim); }
+.oferta__preco b { font-size: 22px; letter-spacing: -0.03em; color: var(--text); }
+.oferta__btn { align-self: flex-start; margin-top: 6px; }
+.oferta__loja { align-self: flex-start; font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; background: rgba(var(--fg), .1); color: var(--text); }
+.oferta__loja--ml { background: #FFE600; color: #2D3277; }
+.oferta__loja--shopee { background: #EE4D2D; color: #fff; }
+.oferta__loja--tiktok { background: #111; color: #fff; box-shadow: inset 0 0 0 1px #25F4EE; }
+.oferta__loja--amazon { background: #232F3E; color: #FF9900; }
+.oferta__loja--magalu { background: #0086FF; color: #fff; }
+.oferta__loja--ali { background: #E43225; color: #fff; }
+.oferta__loja--shein { background: #000; color: #fff; }
+.ofertas-aviso { font-size: 12.5px; color: var(--dim); margin-top: 16px; }
+.ofertas-filtros { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+@media (max-width: 1024px) { .ofertas-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 720px) { .ofertas-grid { grid-template-columns: 1fr 1fr; gap: 12px; } .oferta__corpo { padding: 12px; } .oferta__corpo h3 { font-size: 14.5px; } .oferta__preco b { font-size: 18px; } .oferta__btn { font-size: 12.5px; } }
+
 .article-fonte { margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 14px; color: var(--dim); }
 .article-fonte a { color: var(--accent-text); text-decoration: underline; text-underline-offset: 3px; }
 .article-head { max-width: 920px; padding: 22px 0 32px; }
