@@ -46,6 +46,11 @@
   if (anuncio) {
     if (ps.length >= 3) ps[1].after(anuncio); else artigo.appendChild(anuncio);
   }
+  // crédito da fonte (matérias feitas a partir de outro veículo ou órgão)
+  if (n.fonte_nome) {
+    const url = util.linkSeguro(n.fonte_url);
+    artigo.insertAdjacentHTML('beforeend', `<p class="article-fonte">Com informações de ${url ? `<a href="${esc(url)}" target="_blank" rel="noopener nofollow">${esc(n.fonte_nome)}</a>` : esc(n.fonte_nome)}.</p>`);
+  }
 
   // compartilhar
   const url = location.origin + location.pathname + '?n=' + encodeURIComponent(n.slug);

@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
   <script src="assets/js/tema.js?v=3"></script>
-  <link rel="stylesheet" href="assets/css/style.css?v=6">
+  <link rel="stylesheet" href="assets/css/style.css?v=7">
   <style>
     body { min-height: 100vh; }
     .p-top { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 14px; height: 68px; padding: 0 clamp(16px, 3vw, 28px); border-bottom: 1px solid var(--line); background: rgba(var(--bgc), .85); backdrop-filter: blur(14px); }
@@ -82,13 +82,38 @@
     .demo-note { margin-top: 16px; padding: 12px 14px; border-radius: 12px; background: rgba(251,185,49,.12); color: var(--text); font-size: 13px; line-height: 1.45; }
 
     .empty { color: var(--dim); padding: 30px 18px; font-size: 14px; }
+
+    .p-nav { display: flex; gap: 4px; padding: 4px; border-radius: 999px; border: 1px solid var(--line-2); margin-left: 8px; overflow-x: auto; }
+    .p-nav button { padding: 7px 14px; border-radius: 999px; font-size: 13.5px; color: var(--muted); white-space: nowrap; }
+    .p-nav button.is-on { background: var(--text); color: var(--bg); font-weight: 600; }
+    .p-cfg { padding: clamp(18px, 3vw, 36px); max-width: 1080px; margin: 0 auto; width: 100%; }
+    .p-cfg h1 { font-size: 28px; letter-spacing: -0.04em; margin-bottom: 4px; }
+    .p-cfg .sub { color: var(--dim); font-size: 13.5px; margin-bottom: 24px; max-width: 75ch; }
+    .p-card { border: 1px solid var(--line-2); border-radius: 18px; padding: 22px; margin-bottom: 18px; background: var(--bg-2); }
+    .p-card h2 { font-size: 18px; letter-spacing: -0.02em; margin-bottom: 16px; }
+    .p-card h2 small { font-size: 12.5px; color: var(--dim); font-weight: 500; letter-spacing: 0; margin-left: 6px; }
+    .p-card .in { background: var(--bg); }
+    .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .grid-midia { display: grid; grid-template-columns: 2fr 1fr .8fr 2fr; gap: 8px; margin-bottom: 8px; }
+    .grid-col { display: grid; grid-template-columns: 2.4fr 1.2fr 1fr 1.4fr; gap: 8px; margin-bottom: 8px; }
+    .p-save { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 6px; }
+    .p-save small { color: var(--dim); font-size: 12px; }
+    .p-tabela { overflow-x: auto; }
+    .p-tabela table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    .p-tabela th { text-align: left; font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--dim); font-weight: 600; padding: 8px 10px; border-bottom: 1px solid var(--line-2); }
+    .p-tabela td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    .p-tabela td a { color: var(--accent-text); }
+    .st--robo { background: rgba(80,140,255,.16); color: #5b8def; }
+    .st--desc { background: rgba(229,83,61,.12); color: #e5533d; }
     [hidden] { display: none !important; }
 
     @media (max-width: 900px) {
       .p-wrap { grid-template-columns: 1fr; }
       .p-list { border-right: 0; max-height: 46vh; border-bottom: 1px solid var(--line); }
-      .grid2, .grid3, .foto { grid-template-columns: 1fr; }
-      .p-top__title { display: none; }
+      .grid2, .grid3, .grid4, .foto, .grid-midia, .grid-col { grid-template-columns: 1fr; }
+      .grid-midia, .grid-col { padding-bottom: 10px; border-bottom: 1px dashed var(--line-2); margin-bottom: 10px; }
+      .p-top { height: auto; flex-wrap: wrap; padding-top: 10px; padding-bottom: 10px; }
+      .p-nav { order: 3; width: 100%; margin-left: 0; }
     }
   </style>
 </head>
@@ -118,7 +143,12 @@
 <div data-view="app" hidden>
   <header class="p-top">
     <a class="logo" href="index.html" title="Abrir o site"><span class="logo__mark">ORIGEM<span class="logo__68">68<svg viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 30 C 22 40, 44 20, 66 13 S 92 6, 100 2 C 92 15, 74 21, 58 26 S 20 40, 0 30Z" fill="url(#sw)"/></svg></span></span></a>
-    <span class="p-top__title">Painel da redação</span>
+    <nav class="p-nav" data-abas>
+      <button class="is-on" data-aba="noticias">Notícias</button>
+      <button data-aba="site">Capa e site</button>
+      <button data-aba="robo">Robô</button>
+      <button data-aba="inscritos">Inscritos</button>
+    </nav>
     <div class="p-top__right">
       <span class="badge" data-modo></span>
       <button class="icon-btn theme-btn" data-theme-toggle aria-label="Mudar tema"><svg class="i-moon"><use href="#i-moon"/></svg><svg class="i-sun"><use href="#i-sun"/></svg></button>
@@ -127,7 +157,7 @@
     </div>
   </header>
 
-  <div class="p-wrap">
+  <div class="p-wrap" data-aba-view="noticias">
     <aside class="p-list">
       <div class="p-list__head">
         <input class="in" type="search" placeholder="Buscar pelo título…" data-busca aria-label="Buscar notícias">
@@ -158,7 +188,7 @@
           <div class="f">
             <label for="editoria">Editoria</label>
             <select class="in" id="editoria">
-              <option>Rio Branco</option><option>Interior</option><option>Política</option><option>Economia</option><option>Amazônia</option><option>Saúde</option><option>Educação</option><option>Segurança</option><option>Esporte</option><option>Cultura</option><option>Negócios</option><option>Cidades</option>
+              <option>Rio Branco</option><option>Interior</option><option>Política</option><option>Economia</option><option>Amazônia</option><option>Saúde</option><option>Educação</option><option>Segurança</option><option>Esporte</option><option>Cultura</option><option>Negócios</option><option>Cidades</option><option>Brasil</option>
             </select>
           </div>
           <div class="f">
@@ -214,6 +244,10 @@
           <div class="f"><label for="autor">Autor</label><input class="in" id="autor" value="Redação Origem 68"></div>
           <div class="f"><label for="slug">Endereço da página <small>(gerado pelo título)</small></label><input class="in" id="slug" pattern="[a-z0-9]+(-[a-z0-9]+)*" placeholder="rio-acre-sobe-40-cm"></div>
         </div>
+        <div class="grid2">
+          <div class="f"><label for="fonte_nome">Fonte <small>(opcional: aparece como “Com informações de…”)</small></label><input class="in" id="fonte_nome" placeholder="Ex.: Agência de Notícias do Acre"></div>
+          <div class="f"><label for="fonte_url">Link da fonte</label><input class="in" id="fonte_url" type="url" placeholder="https://…"></div>
+        </div>
 
         <div class="actions">
           <button type="submit" class="btn btn--primary" data-acao="publicado">Publicar <span class="btn__arrow"><svg><use href="#i-arrow"/></svg></span></button>
@@ -225,17 +259,148 @@
       </form>
     </main>
   </div>
+
+  <!-- ========== CAPA E SITE ========== -->
+  <main class="p-cfg" data-aba-view="site" hidden>
+    <h1>Capa e site</h1>
+    <p class="sub">Tudo o que aparece no site além das notícias. Cada bloco tem seu botão de salvar. Clima e qualidade do ar são automáticos.</p>
+
+    <form class="p-card" data-bloco="pulso">
+      <h2>Pulso do dia <small>faixa abaixo da manchete</small></h2>
+      <div class="grid2">
+        <div class="f"><label>Nível do Rio Acre</label><input class="in" name="rio_nivel" placeholder="Ex.: 11,42 m"><small>Deixe vazio para esconder.</small></div>
+        <div class="f"><label>Texto do rio</label><input class="in" name="rio_info" placeholder="Ex.: Rio Acre em Rio Branco · estável"></div>
+        <div class="f"><label>Arroba do boi</label><input class="in" name="boi_valor" placeholder="Ex.: R$ 298,00"><small>Deixe vazio para esconder.</small></div>
+        <div class="f"><label>Texto do boi</label><input class="in" name="boi_info" placeholder="Ex.: Arroba do boi gordo · 26/11"></div>
+        <div class="f"><label>Item extra (opcional)</label><input class="in" name="extra_valor" placeholder="Ex.: Gasolina R$ 7,49"></div>
+        <div class="f"><label>Texto do item extra</label><input class="in" name="extra_info" placeholder="Ex.: Preço médio em Rio Branco"></div>
+      </div>
+      <div class="p-save"><button class="btn btn--primary btn--sm">Salvar pulso</button><span class="msg"></span></div>
+    </form>
+
+    <form class="p-card" data-bloco="vitrine">
+      <h2>Vitrine de editorias <small>mostra a notícia mais recente de cada uma</small></h2>
+      <div class="f"><label>Título do bloco (opcional)</label><input class="in" name="titulo" placeholder="Da nossa terra. Do nosso tempo."></div>
+      <div class="grid4">
+        <div class="f"><label>Editoria 1</label><select class="in" name="editorias[0]" data-opcoes="editorias"></select></div>
+        <div class="f"><label>Editoria 2</label><select class="in" name="editorias[1]" data-opcoes="editorias"></select></div>
+        <div class="f"><label>Editoria 3</label><select class="in" name="editorias[2]" data-opcoes="editorias"></select></div>
+        <div class="f"><label>Editoria 4</label><select class="in" name="editorias[3]" data-opcoes="editorias"></select></div>
+      </div>
+      <div class="p-save"><button class="btn btn--primary btn--sm">Salvar vitrine</button><span class="msg"></span></div>
+    </form>
+
+    <form class="p-card" data-bloco="midia">
+      <h2>Vídeos e podcasts <small>o 1º vira o destaque grande · links do YouTube mostram a capa e tocam no site</small></h2>
+      <div data-repetir="5" data-nome="itens">
+        <div class="grid-midia">
+          <input class="in" name="titulo" placeholder="Título">
+          <input class="in" name="tipo" placeholder="Tipo (Vídeo, Podcast…)">
+          <input class="in" name="duracao" placeholder="Duração">
+          <input class="in" name="url" placeholder="Link (https://…)">
+        </div>
+      </div>
+      <div class="p-save"><button class="btn btn--primary btn--sm">Salvar vídeos</button><span class="msg"></span><small>Sem nenhum item, o bloco some do site.</small></div>
+    </form>
+
+    <form class="p-card" data-bloco="colunas">
+      <h2>Opinião <small>até 3 colunas</small></h2>
+      <div data-repetir="3" data-nome="itens">
+        <div class="grid-col">
+          <input class="in" name="frase" placeholder="Frase em destaque">
+          <input class="in" name="nome" placeholder="Nome da coluna ou autor">
+          <input class="in" name="assunto" placeholder="Assunto">
+          <input class="in" name="link" placeholder="Link (opcional)">
+        </div>
+      </div>
+      <div class="p-save"><button class="btn btn--primary btn--sm">Salvar colunas</button><span class="msg"></span></div>
+    </form>
+
+    <form class="p-card" data-bloco="boletim">
+      <h2>Boletim por e-mail <small>chamada no fim da capa</small></h2>
+      <div class="f"><label>Título</label><input class="in" name="titulo" placeholder="Comece o dia sabendo do Acre."></div>
+      <div class="f"><label>Texto</label><input class="in" name="texto" placeholder="Deixe seu e-mail e receba as principais notícias do estado."></div>
+      <div class="p-save"><button class="btn btn--primary btn--sm">Salvar boletim</button><span class="msg"></span></div>
+    </form>
+
+    <form class="p-card" data-bloco="site">
+      <h2>Redes, contatos e rodapé</h2>
+      <div class="grid2">
+        <div class="f"><label>Instagram (link)</label><input class="in" name="instagram" placeholder="https://instagram.com/…"></div>
+        <div class="f"><label>YouTube (link)</label><input class="in" name="youtube" placeholder="https://youtube.com/@…"></div>
+        <div class="f"><label>X / Twitter (link)</label><input class="in" name="x" placeholder="https://x.com/…"></div>
+        <div class="f"><label>Canal ou grupo de WhatsApp (link)</label><input class="in" name="whatsapp_canal" placeholder="https://whatsapp.com/channel/…"><small>Usado no botão “Receba no WhatsApp”.</small></div>
+        <div class="f"><label>WhatsApp da redação (número)</label><input class="in" name="whatsapp_redacao" placeholder="68 99999-9999"><small>Usado em “Envie sua pauta”.</small></div>
+        <div class="f"><label>E-mail da redação</label><input class="in" name="email_redacao" placeholder="redacao@…"></div>
+      </div>
+      <div class="f"><label>Texto do rodapé</label><input class="in" name="sobre" placeholder="Jornalismo independente feito no Acre, para o Acre."></div>
+      <div class="f"><label>Aviso no rodapé (opcional)</label><input class="in" name="aviso_rodape" placeholder="Ex.: CNPJ 00.000.000/0001-00"></div>
+      <div class="p-save"><button class="btn btn--primary btn--sm">Salvar contatos</button><span class="msg"></span></div>
+    </form>
+
+    <form class="p-card" data-pagina-form>
+      <h2>Páginas institucionais <small>só aparecem no rodapé depois de salvas</small></h2>
+      <div class="grid2">
+        <div class="f"><label>Página</label>
+          <select class="in" data-pagina-sel>
+            <option value="quem-somos">Quem somos</option><option value="expediente">Expediente</option><option value="codigo-de-etica">Código de ética</option>
+            <option value="trabalhe-conosco">Trabalhe conosco</option><option value="anuncie">Anuncie</option><option value="contato">Contato / Envie sua pauta</option>
+            <option value="correcoes">Correções</option><option value="privacidade">Política de privacidade</option>
+          </select></div>
+        <div class="f"><label>Título</label><input class="in" name="titulo" required></div>
+      </div>
+      <div class="f"><label>Texto</label><textarea class="in" name="corpo" rows="10" placeholder="Mesmo formato das notícias: linha em branco entre parágrafos, ## intertítulo, **negrito**, [link](https://…)"></textarea></div>
+      <div class="p-save"><button class="btn btn--primary btn--sm">Salvar página</button><a class="btn btn--ghost btn--sm" data-pagina-ver target="_blank">Ver no site</a><button type="button" class="btn btn--danger btn--sm" data-pagina-apagar>Tirar do ar</button><span class="msg"></span></div>
+    </form>
+  </main>
+
+  <!-- ========== ROBÔ ========== -->
+  <main class="p-cfg" data-aba-view="robo" hidden>
+    <h1>Robô de notícias</h1>
+    <p class="sub">De hora em hora, o robô lê fontes do Acre, descarta o que é sensacionalista ou irrelevante e reescreve o resto com crédito da fonte. Fontes oficiais entram publicadas; as demais viram rascunho para você revisar.</p>
+    <form class="p-card" data-bloco="robo">
+      <h2>Configuração</h2>
+      <div class="grid2">
+        <div class="f"><label>Robô</label><select class="in" name="ativo"><option value="sim">Ligado</option><option value="nao">Pausado</option></select></div>
+        <div class="f"><label>Máximo de matérias por rodada</label><input class="in" name="max_rodada" type="number" min="1" max="5" placeholder="4"><small>De 1 a 5 (limite do plano grátis).</small></div>
+        <div class="f"><label>Fontes oficiais</label><select class="in" name="oficiais"><option value="publicar">Publicar direto</option><option value="rascunho">Também virar rascunho</option></select></div>
+        <div class="f"><label>Autor das matérias do robô</label><input class="in" name="autor" placeholder="Redação Origem 68"></div>
+      </div>
+      <div class="p-save"><button class="btn btn--primary btn--sm">Salvar configuração</button><span class="msg"></span></div>
+    </form>
+    <div class="p-card">
+      <h2>Ações</h2>
+      <div class="p-save">
+        <button type="button" class="btn btn--primary btn--sm" data-robo-rodar>Rodar agora</button>
+        <button type="button" class="btn btn--ghost btn--sm" data-robo-telegram>Conectar meu Telegram</button>
+        <span class="msg" data-robo-msg></span>
+      </div>
+      <small style="display:block;margin-top:10px;color:var(--dim)">Para o Telegram: abra o seu robô no Telegram, mande um “oi” para ele e depois clique em “Conectar meu Telegram”.</small>
+    </div>
+    <div class="p-card">
+      <h2>O que o robô leu por último</h2>
+      <div class="p-tabela" data-robo-lista><p class="empty">Carregando…</p></div>
+    </div>
+  </main>
+
+  <!-- ========== INSCRITOS ========== -->
+  <main class="p-cfg" data-aba-view="inscritos" hidden>
+    <h1>Inscritos no boletim</h1>
+    <p class="sub" data-inscritos-total></p>
+    <div class="p-save" style="margin-bottom:16px"><button type="button" class="btn btn--primary btn--sm" data-inscritos-csv>Baixar lista (CSV)</button></div>
+    <div class="p-card"><div class="p-tabela" data-inscritos-lista></div></div>
+  </main>
 </div>
 
-<script src="assets/js/config.js?v=2"></script>
-<script src="assets/js/dados.js?v=1"></script>
+<script src="assets/js/config.js?v=3"></script>
+<script src="assets/js/dados.js?v=3"></script>
 <script>
 (function () {
   const { api, modo, util } = window.O68;
   const $ = (s, el = document) => el.querySelector(s);
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
   const form = $('[data-form]');
-  const campos = ['titulo', 'linha_fina', 'editoria', 'municipio', 'posicao', 'foto_credito', 'corpo', 'autor', 'slug'];
+  const campos = ['titulo', 'linha_fina', 'editoria', 'municipio', 'posicao', 'foto_credito', 'corpo', 'autor', 'slug', 'fonte_nome', 'fonte_url'];
   let lista = [], atual = null, filtro = 'todas', slugManual = false, fotoUrl = '', sujo = false;
 
   // ---------- tema ----------
@@ -270,7 +435,13 @@
   });
   $('[data-sair]').addEventListener('click', async () => { if (!confirmarSaida()) return; await api.sair(); location.reload(); });
 
-  async function abrirApp() { mostrar('app'); await carregar(); novo(); }
+  async function abrirApp() {
+    mostrar('app'); await carregar();
+    // link vindo do Telegram: painel.html?abrir=<id>
+    const id = new URLSearchParams(location.search).get('abrir');
+    const n = id && lista.find(x => String(x.id) === id);
+    if (n) abrir(n); else novo();
+  }
 
   // ---------- lista ----------
   async function carregar() {
@@ -287,6 +458,7 @@
         <small>
           <span class="st ${n.status === 'publicado' ? 'st--pub">Publicada' : 'st--ras">Rascunho'}</span>
           ${n.posicao !== 'normal' ? `<span class="st st--pos">${n.posicao === 'manchete' ? 'Manchete' : 'Destaque'}</span>` : ''}
+          ${n.origem === 'robo' ? '<span class="st st--robo">Robô</span>' : ''}
           <span>${util.esc(n.editoria)}</span><span>${util.tempoRelativo(n.publicado_em || n.criado_em)}</span>
         </small>
       </button>`).join('') : '<div class="empty">Nenhuma notícia encontrada.</div>';
@@ -385,6 +557,7 @@
     campos.forEach(c => { n[c] = $('#' + c).value.trim(); });
     n.slug = n.slug || util.slugify(n.titulo);
     n.municipio = n.municipio || null; n.foto_url = fotoUrl || null; n.status = acao;
+    n.fonte_nome = n.fonte_nome || null; n.fonte_url = n.fonte_url || null;
     if (acao === 'publicado' && !n.corpo) return msg('Escreva o texto antes de publicar.', 'err');
     if (acao === 'publicado' && atual && atual.status !== 'publicado') n.publicado_em = null; // publica agora
     $$('[data-acao]').forEach(b => b.disabled = true); msg(acao === 'publicado' ? 'Publicando…' : 'Salvando…');
@@ -407,5 +580,6 @@
   iniciar();
 })();
 </script>
+<script src="assets/js/painel-site.js?v=2"></script>
 </body>
 </html>

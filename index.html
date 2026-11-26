@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
   <script src="assets/js/tema.js?v=3"></script>
-  <link rel="stylesheet" href="assets/css/style.css?v=6">
+  <link rel="stylesheet" href="assets/css/style.css?v=7">
 </head>
 <body class="is-loading">
 
@@ -48,12 +48,12 @@
   <div class="wrap">
     <div class="topbar__left">
       <span data-today>Quarta-feira, 25 de novembro</span>
-      <span class="topbar__weather hide-sm"><svg width="14" height="14"><use href="#i-sun"/></svg> Rio Branco <b>33°</b></span>
+      <span class="topbar__weather hide-sm" data-clima-topo hidden><svg width="14" height="14"><use href="#i-sun"/></svg> Rio Branco <b></b></span>
     </div>
     <div class="topbar__right">
-      <a href="#" class="hide-sm">Anuncie</a>
-      <a href="#" class="hide-sm">Expediente</a>
-      <a href="#">Envie sua pauta</a>
+      <a href="pagina.html?p=anuncie" class="hide-sm" data-pagina="anuncie">Anuncie</a>
+      <a href="pagina.html?p=expediente" class="hide-sm" data-pagina="expediente">Expediente</a>
+      <a href="pagina.html?p=contato" data-link="pauta" data-pagina="contato">Envie sua pauta</a>
     </div>
   </div>
 </div>
@@ -68,19 +68,19 @@
 
     <nav class="nav" aria-label="Editorias">
       <a href="index.html" class="is-active">Início</a>
-      <a href="#ultimas">Rio Branco</a>
-      <a href="#municipios">Interior</a>
-      <a href="#ultimas">Política</a>
-      <a href="#ultimas">Economia</a>
-      <a href="#amazonia">Amazônia</a>
-      <a href="#ultimas">Esporte</a>
-      <a href="#ultimas">Cultura</a>
+      <a href="lista.html?editoria=Rio Branco">Rio Branco</a>
+      <a href="lista.html?editoria=Interior">Interior</a>
+      <a href="lista.html?editoria=Política">Política</a>
+      <a href="lista.html?editoria=Economia">Economia</a>
+      <a href="lista.html?editoria=Amazônia">Amazônia</a>
+      <a href="lista.html?editoria=Esporte">Esporte</a>
+      <a href="lista.html?editoria=Cultura">Cultura</a>
     </nav>
 
     <div class="header__actions">
       <button class="icon-btn theme-btn" data-theme-toggle aria-label="Mudar tema"><svg class="i-moon"><use href="#i-moon"/></svg><svg class="i-sun"><use href="#i-sun"/></svg></button>
       <button class="icon-btn search-btn" data-open-search aria-label="Buscar"><svg><use href="#i-search"/></svg></button>
-      <a href="#newsletter" class="btn btn--primary header__cta">Receba no WhatsApp <span class="btn__arrow"><svg><use href="#i-arrow"/></svg></span></a>
+      <a href="index.html#newsletter" class="btn btn--primary header__cta" data-link="whatsapp_canal">Receba no WhatsApp <span class="btn__arrow"><svg><use href="#i-arrow"/></svg></span></a>
       <button class="icon-btn menu-btn" data-open-menu aria-label="Abrir menu"><svg><use href="#i-menu"/></svg></button>
     </div>
   </div>
@@ -92,12 +92,6 @@
     <span class="ticker__label"><i></i> Agora</span>
     <div class="ticker__viewport">
       <div class="ticker__track" data-ticker>
-        <a href="artigo.html">Defesa Civil atualiza nível do Rio Acre na capital</a>
-        <a href="artigo.html">BR-364: trecho entre Sena Madureira e Feijó recebe obras de recuperação</a>
-        <a href="artigo.html">Feira da agricultura familiar movimenta o centro de Rio Branco</a>
-        <a href="artigo.html">Cruzeiro do Sul recebe festival de cultura do Juruá</a>
-        <a href="artigo.html">Previsão indica chuva forte para o fim de semana no Vale do Acre</a>
-        <a href="artigo.html">Inscrições abertas para cursos técnicos gratuitos no estado</a>
       </div>
     </div>
   </div>
@@ -109,7 +103,7 @@
 <!-- ANÚNCIO "topo" (970 × 90 / celular 320 × 100): troque o <a class="ad__slot"> pelo código do anúncio -->
 <div class="ad ad--leader" data-ad="topo">
   <span class="ad__label">Publicidade</span>
-  <a class="ad__slot" href="#anuncie"><span><b>Anuncie aqui</b><span class="ad__size--d">970 × 90</span><span class="ad__size--m">320 × 100</span></span></a>
+  <a class="ad__slot" href="pagina.html?p=anuncie"><span><b>Anuncie aqui</b><span class="ad__size--d">970 × 90</span><span class="ad__size--m">320 × 100</span></span></a>
 </div></div></div>
 
   <!-- HERO -->
@@ -147,35 +141,13 @@
 
           <div class="mostread">
             <div class="mostread__head"><h2>Mais lidas</h2><span>Semana</span></div>
-            <ol data-mais-lidas>
-              <li><div><a href="artigo.html">Calendário de pagamento dos servidores estaduais é divulgado</a><small>Economia</small></div></li>
-              <li><div><a href="artigo.html">Ponte sobre o Rio Madeira: o que muda no frete para o Acre</a><small>Infraestrutura</small></div></li>
-              <li><div><a href="artigo.html">Rio Branco Football Club anuncia elenco para a próxima temporada</a><small>Esporte</small></div></li>
-              <li><div><a href="artigo.html">Guia: onde comer tacacá e baixaria na capital</a><small>Cultura</small></div></li>
-            </ol>
+            <ol data-mais-lidas></ol>
           </div>
         </div>
       </div>
 
-      <!-- Pulso do dia -->
-      <div class="pulse">
-        <div class="pulse__item">
-          <span class="pulse__icon"><svg><use href="#i-drop"/></svg></span>
-          <div><b>11,42 m</b><small>Rio Acre em Rio Branco · estável</small></div>
-        </div>
-        <div class="pulse__item">
-          <span class="pulse__icon"><svg><use href="#i-sun"/></svg></span>
-          <div><b>33° / 22°</b><small>Sol entre nuvens, pancadas à tarde</small></div>
-        </div>
-        <div class="pulse__item">
-          <span class="pulse__icon"><svg><use href="#i-flame"/></svg></span>
-          <div><b>Qualidade do ar</b><small>Boa em todo o Vale do Acre</small></div>
-        </div>
-        <div class="pulse__item">
-          <span class="pulse__icon"><svg><use href="#i-coin"/></svg></span>
-          <div><b>Arroba do boi</b><small>Cotação atualizada às 10h</small></div>
-        </div>
-      </div>
+      <!-- Pulso do dia: clima e ar são automáticos; rio e boi vêm do painel (Capa e site) -->
+      <div class="pulse" data-pulso hidden></div>
     </div>
   </section>
 
@@ -187,7 +159,7 @@
           <div class="eyebrow">Últimas notícias</div>
           <h2 class="h-section">O que está <em>acontecendo</em> agora</h2>
         </div>
-        <a href="#" class="link-more">Ver todas <svg><use href="#i-arrow"/></svg></a>
+        <a href="lista.html" class="link-more">Ver todas <svg><use href="#i-arrow"/></svg></a>
       </div>
 
       <div class="grid-news">
@@ -243,7 +215,7 @@
 <!-- ANÚNCIO "lateral-ultimas" (300 × 250): troque o <a class="ad__slot"> pelo código do anúncio -->
 <div class="ad ad--rect" data-ad="lateral-ultimas">
   <span class="ad__label">Publicidade</span>
-  <a class="ad__slot" href="#anuncie"><span><b>Anuncie aqui</b>300 × 250</span></a>
+  <a class="ad__slot" href="pagina.html?p=anuncie"><span><b>Anuncie aqui</b>300 × 250</span></a>
 </div>
         </div>
       </div>
@@ -254,38 +226,20 @@
 <!-- ANÚNCIO "meio-capa" (970 × 250 / celular 300 × 250): troque o <a class="ad__slot"> pelo código do anúncio -->
 <div class="ad ad--billboard" data-ad="meio-capa">
   <span class="ad__label">Publicidade</span>
-  <a class="ad__slot" href="#anuncie"><span><b>Anuncie aqui</b><span class="ad__size--d">970 × 250</span><span class="ad__size--m">300 × 250</span></span></a>
+  <a class="ad__slot" href="pagina.html?p=anuncie"><span><b>Anuncie aqui</b><span class="ad__size--d">970 × 250</span><span class="ad__size--m">300 × 250</span></span></a>
 </div></div></div>
 
-  <!-- AMAZÔNIA / EDITORIAS -->
-  <section class="section" id="amazonia" style="padding-top:0">
+  <!-- EDITORIAS (vitrine): última notícia de 4 editorias escolhidas no painel -->
+  <section class="section" id="editorias" style="padding-top:0" data-secao="vitrine" hidden>
     <div class="wrap">
       <div class="section__head">
         <div>
           <div class="eyebrow">Editorias</div>
-          <h2 class="h-section">Da nossa terra.<br><em>Do nosso tempo.</em></h2>
+          <h2 class="h-section" data-vitrine-titulo>Da nossa terra.<br><em>Do nosso tempo.</em></h2>
         </div>
-        <a href="#" class="link-more">Todas as editorias <svg><use href="#i-arrow"/></svg></a>
+        <a href="lista.html" class="link-more">Todas as notícias <svg><use href="#i-arrow"/></svg></a>
       </div>
-
-      <div class="tiles">
-        <a href="artigo.html" class="tile tile--cream">
-          <div class="tile__top"><span class="tile__cat">Amazônia</span><span class="tile__go"><svg><use href="#i-arrow"/></svg></span></div>
-          <div><h3>Monitoramento por satélite mostra queda no desmatamento em reservas extrativistas</h3><small>Meio ambiente · 6 min</small></div>
-        </a>
-        <a href="artigo.html" class="tile tile--orange">
-          <div class="tile__top"><span class="tile__cat">Povos da floresta</span><span class="tile__go"><svg><use href="#i-arrow"/></svg></span></div>
-          <div><h3>Festival indígena reúne etnias do Acre e celebra línguas e cantos tradicionais</h3><small>Cultura · 8 min</small></div>
-        </a>
-        <a href="artigo.html" class="tile tile--dark">
-          <div class="tile__top"><span class="tile__cat">Fronteira</span><span class="tile__go"><svg><use href="#i-arrow"/></svg></span></div>
-          <div><h3>Comércio entre Epitaciolândia e Cobija aquece com a alta do turismo de compras</h3><small>Economia · 5 min</small></div>
-        </a>
-        <a href="artigo.html" class="tile tile--amber">
-          <div class="tile__top"><span class="tile__cat">Sabores</span><span class="tile__go"><svg><use href="#i-arrow"/></svg></span></div>
-          <div><h3>Da castanha ao cupuaçu: a nova geração de chefs que reinventa a cozinha acreana</h3><small>Gastronomia · 7 min</small></div>
-        </a>
-      </div>
+      <div class="tiles" data-vitrine></div>
     </div>
   </section>
 
@@ -300,76 +254,36 @@
             <h2 class="h-section">Os <em>22 municípios</em> do Acre em um só lugar</h2>
             <p>Escolha sua cidade e acompanhe as notícias do Vale do Acre, do Purus, do Tarauacá-Envira e do Juruá.</p>
           </div>
-          <div class="cities__list">
-            <a class="chip" href="#">Rio Branco</a><a class="chip" href="#">Cruzeiro do Sul</a><a class="chip" href="#">Sena Madureira</a><a class="chip" href="#">Tarauacá</a><a class="chip" href="#">Feijó</a><a class="chip" href="#">Brasiléia</a><a class="chip" href="#">Epitaciolândia</a><a class="chip" href="#">Xapuri</a><a class="chip" href="#">Senador Guiomard</a><a class="chip" href="#">Plácido de Castro</a><a class="chip" href="#">Acrelândia</a><a class="chip" href="#">Capixaba</a><a class="chip" href="#">Porto Acre</a><a class="chip" href="#">Bujari</a><a class="chip" href="#">Assis Brasil</a><a class="chip" href="#">Manoel Urbano</a><a class="chip" href="#">Santa Rosa do Purus</a><a class="chip" href="#">Jordão</a><a class="chip" href="#">Mâncio Lima</a><a class="chip" href="#">Rodrigues Alves</a><a class="chip" href="#">Porto Walter</a><a class="chip" href="#">Marechal Thaumaturgo</a>
-          </div>
+          <div class="cities__list" data-municipios></div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- VÍDEO + PODCAST -->
-  <section class="section" style="padding-top:0">
+  <!-- VÍDEOS E PODCASTS (painel: Capa e site) -->
+  <section class="section" id="midia" style="padding-top:0" data-secao="midia" hidden>
     <div class="wrap">
       <div class="section__head">
         <div>
           <div class="eyebrow">Origem 68 em vídeo e áudio</div>
           <h2 class="h-section">Assista. <em>Ouça.</em></h2>
         </div>
-        <a href="#" class="link-more">Canal no YouTube <svg><use href="#i-arrow"/></svg></a>
+        <a href="#" class="link-more" data-link="youtube" hidden>Canal no YouTube <svg><use href="#i-arrow"/></svg></a>
       </div>
-
-      <div class="media">
-        <div class="player">
-          <div class="ph ph--1" data-credit=""></div>
-          <div class="player__ui">
-            <span class="tag tag--hot">Documentário</span>
-            <h3>Estrada de ferro e borracha: a história que formou o Acre</h3>
-            <div class="player__row">
-              <div class="controls">
-                <button aria-label="Voltar 10 segundos"><svg><use href="#i-back10"/></svg></button>
-                <button class="play" aria-label="Reproduzir"><svg><use href="#i-play"/></svg></button>
-                <button aria-label="Avançar 10 segundos"><svg><use href="#i-fwd10"/></svg></button>
-              </div>
-              <div class="progress"><span>08:12</span><div class="progress__bar"><i></i></div><span>21:40</span></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="pods">
-          <a href="#" class="pod"><div class="ph ph--3"></div><div><h4>Papo de Origem #42 — O futuro da BR-364</h4><small>Podcast · 48 min</small></div><span class="pod__play"><svg><use href="#i-play"/></svg></span></a>
-          <a href="#" class="pod"><div class="ph ph--6"></div><div><h4>Boletim da manhã: as notícias do Acre em 5 minutos</h4><small>Diário · 5 min</small></div><span class="pod__play"><svg><use href="#i-play"/></svg></span></a>
-          <a href="#" class="pod"><div class="ph ph--2"></div><div><h4>Vozes do Juruá: músicos de Cruzeiro do Sul</h4><small>Série · 3 episódios</small></div><span class="pod__play"><svg><use href="#i-play"/></svg></span></a>
-          <a href="#" class="pod"><div class="ph ph--5"></div><div><h4>Entrevista: o que pensam os jovens empreendedores do estado</h4><small>Vídeo · 22 min</small></div><span class="pod__play"><svg><use href="#i-play"/></svg></span></a>
-        </div>
-      </div>
+      <div class="media" data-midia></div>
     </div>
   </section>
 
-  <!-- OPINIÃO -->
-  <section class="section" style="padding-top:0">
+  <!-- OPINIÃO (painel: Capa e site) -->
+  <section class="section" style="padding-top:0" data-secao="colunas" hidden>
     <div class="wrap">
       <div class="section__head">
         <div>
           <div class="eyebrow">Opinião</div>
           <h2 class="h-section">Quem pensa o <em>Acre</em></h2>
         </div>
-        <a href="#" class="link-more">Todos os colunistas <svg><use href="#i-arrow"/></svg></a>
       </div>
-      <div class="opinion">
-        <a href="artigo.html" class="column">
-          <blockquote>A floresta em pé precisa dar renda a quem mora nela — e isso começa no ramal.</blockquote>
-          <div class="author"><span class="avatar">CO</span><div><b>Coluna Território</b><small>Economia e meio ambiente</small></div></div>
-        </a>
-        <a href="artigo.html" class="column">
-          <blockquote>Rio Branco cresceu para os lados. Agora precisa aprender a crescer para dentro.</blockquote>
-          <div class="author"><span class="avatar">CU</span><div><b>Coluna Cidade Viva</b><small>Urbanismo e mobilidade</small></div></div>
-        </a>
-        <a href="artigo.html" class="column">
-          <blockquote>A cultura acreana não é periferia de nada. É centro do próprio mundo.</blockquote>
-          <div class="author"><span class="avatar">PA</span><div><b>Coluna Pé de Serra</b><small>Cultura e identidade</small></div></div>
-        </a>
-      </div>
+      <div class="opinion" data-colunas></div>
     </div>
   </section>
 
@@ -377,27 +291,27 @@
 <!-- ANÚNCIO "antes-newsletter" (970 × 90 / celular 320 × 100): troque o <a class="ad__slot"> pelo código do anúncio -->
 <div class="ad ad--leader" data-ad="antes-newsletter">
   <span class="ad__label">Publicidade</span>
-  <a class="ad__slot" href="#anuncie"><span><b>Anuncie aqui</b><span class="ad__size--d">970 × 90</span><span class="ad__size--m">320 × 100</span></span></a>
+  <a class="ad__slot" href="pagina.html?p=anuncie"><span><b>Anuncie aqui</b><span class="ad__size--d">970 × 90</span><span class="ad__size--m">320 × 100</span></span></a>
 </div></div></div>
 
-  <!-- NEWSLETTER -->
+  <!-- BOLETIM (textos editáveis no painel; e-mails ficam em "Inscritos") -->
   <section class="section" id="newsletter" style="padding-top:0">
     <div class="wrap">
       <div class="news-cta">
         <div class="news-cta__big">68</div>
         <div class="news-cta__inner">
           <div>
-            <h2>Comece o dia sabendo do Acre.</h2>
-            <p>As principais notícias do estado, todas as manhãs às 7h, direto no seu e-mail ou WhatsApp. Gratuito, sem spam.</p>
+            <h2 data-boletim="titulo">Comece o dia sabendo do Acre.</h2>
+            <p data-boletim="texto">Deixe seu e-mail e receba as principais notícias do estado. Gratuito, sem spam.</p>
           </div>
           <div>
             <form class="subscribe" data-subscribe>
               <label for="email" class="sr-only">Seu e-mail</label>
-              <input id="email" type="email" required placeholder="seu@email.com">
+              <input id="email" type="email" required maxlength="200" placeholder="seu@email.com">
               <button class="btn btn--cream" type="submit">Quero receber <span class="btn__arrow"><svg><use href="#i-arrow"/></svg></span></button>
             </form>
             <div class="subscribe__ok" data-subscribe-ok aria-live="polite"></div>
-            <div class="news-cta__perks"><span>✓ Boletim às 7h</span><span>✓ Alertas urgentes</span><span>✓ Cancele quando quiser</span></div>
+            <div class="news-cta__perks"><span>✓ Gratuito</span><span>✓ Sem spam</span><span>✓ Cancele quando quiser</span></div>
           </div>
         </div>
       </div>
@@ -415,31 +329,31 @@
           <span class="logo__mark">ORIGEM<span class="logo__68">68<svg viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 30 C 22 40, 44 20, 66 13 S 92 6, 100 2 C 92 15, 74 21, 58 26 S 20 40, 0 30Z" fill="url(#sw)"/></svg></span></span>
           <span class="logo__tag">Portal de notícias do Acre</span>
         </a>
-        <p>Jornalismo independente feito no Acre, para o Acre. Da nossa terra. Do nosso tempo.</p>
+        <p data-site-sobre>Jornalismo independente feito no Acre, para o Acre. Da nossa terra. Do nosso tempo.</p>
         <div class="socials">
-          <a class="icon-btn" href="#" aria-label="Instagram"><svg><use href="#i-ig"/></svg></a>
-          <a class="icon-btn" href="#" aria-label="YouTube"><svg><use href="#i-yt"/></svg></a>
-          <a class="icon-btn" href="#" aria-label="WhatsApp"><svg><use href="#i-wa"/></svg></a>
-          <a class="icon-btn" href="#" aria-label="X"><svg><use href="#i-x"/></svg></a>
+          <a class="icon-btn" href="#" aria-label="Instagram" data-link="instagram" hidden><svg><use href="#i-ig"/></svg></a>
+          <a class="icon-btn" href="#" aria-label="YouTube" data-link="youtube" hidden><svg><use href="#i-yt"/></svg></a>
+          <a class="icon-btn" href="#" aria-label="WhatsApp" data-link="whatsapp" hidden><svg><use href="#i-wa"/></svg></a>
+          <a class="icon-btn" href="#" aria-label="X" data-link="x" hidden><svg><use href="#i-x"/></svg></a>
         </div>
       </div>
       <div>
         <h4>Editorias</h4>
-        <ul><li><a href="#">Rio Branco</a></li><li><a href="#">Interior</a></li><li><a href="#">Política</a></li><li><a href="#">Economia</a></li><li><a href="#">Amazônia</a></li><li><a href="#">Esporte</a></li></ul>
+        <ul><li><a href="lista.html?editoria=Rio Branco">Rio Branco</a></li><li><a href="lista.html?editoria=Interior">Interior</a></li><li><a href="lista.html?editoria=Política">Política</a></li><li><a href="lista.html?editoria=Economia">Economia</a></li><li><a href="lista.html?editoria=Amazônia">Amazônia</a></li><li><a href="lista.html?editoria=Esporte">Esporte</a></li></ul>
       </div>
       <div>
         <h4>Origem 68</h4>
-        <ul><li><a href="#">Quem somos</a></li><li><a href="#">Expediente</a></li><li><a href="#">Código de ética</a></li><li><a href="#">Trabalhe conosco</a></li><li><a href="#anuncie" id="anuncie">Anuncie</a></li></ul>
+        <ul><li><a href="pagina.html?p=quem-somos" data-pagina="quem-somos">Quem somos</a></li><li><a href="pagina.html?p=expediente" data-pagina="expediente">Expediente</a></li><li><a href="pagina.html?p=codigo-de-etica" data-pagina="codigo-de-etica">Código de ética</a></li><li><a href="pagina.html?p=trabalhe-conosco" data-pagina="trabalhe-conosco">Trabalhe conosco</a></li><li><a href="pagina.html?p=anuncie" id="anuncie" data-pagina="anuncie">Anuncie</a></li></ul>
       </div>
       <div>
         <h4>Fale com a redação</h4>
-        <ul><li><a href="#">Envie sua pauta</a></li><li><a href="#">WhatsApp da redação</a></li><li><a href="#">Correções</a></li><li><a href="#">Política de privacidade</a></li><li><a href="painel.html" rel="nofollow">Painel da redação</a></li></ul>
+        <ul><li><a href="pagina.html?p=contato" data-link="pauta" data-pagina="contato">Envie sua pauta</a></li><li><a href="pagina.html?p=contato" data-link="whatsapp_redacao" data-pagina="contato">WhatsApp da redação</a></li><li><a href="pagina.html?p=correcoes" data-pagina="correcoes">Correções</a></li><li><a href="pagina.html?p=privacidade" data-pagina="privacidade">Política de privacidade</a></li><li><a href="painel.html" rel="nofollow">Painel da redação</a></li></ul>
       </div>
     </div>
     <div class="footer__word" aria-hidden="true">ORIGEM68</div>
     <div class="footer__bottom">
       <span>© <span data-year>2026</span> Origem 68 · Rio Branco, Acre</span>
-      <span>Conteúdo ilustrativo — matérias de exemplo para o layout.</span>
+      <span data-site-aviso></span>
     </div>
   </div>
 </footer>
@@ -449,7 +363,7 @@
   <a href="index.html" class="is-active" aria-label="Início"><svg><use href="#i-home"/></svg></a>
   <a href="#municipios" aria-label="Municípios"><svg><use href="#i-pin"/></svg></a>
   <button data-open-search aria-label="Buscar"><svg><use href="#i-search"/></svg></button>
-  <a href="#newsletter" aria-label="Podcast e vídeos"><svg><use href="#i-mic"/></svg></a>
+  <a href="index.html#midia" aria-label="Vídeos e podcasts"><svg><use href="#i-mic"/></svg></a>
   <button data-open-menu aria-label="Menu"><svg><use href="#i-menu"/></svg></button>
 </nav>
 
@@ -461,15 +375,15 @@
   </div>
   <nav>
     <a href="index.html">Início <span>01</span></a>
-    <a href="#ultimas">Rio Branco <span>02</span></a>
-    <a href="#municipios">Interior <span>03</span></a>
-    <a href="#ultimas">Política <span>04</span></a>
-    <a href="#ultimas">Economia <span>05</span></a>
-    <a href="#amazonia">Amazônia <span>06</span></a>
-    <a href="#ultimas">Esporte <span>07</span></a>
-    <a href="#ultimas">Cultura <span>08</span></a>
+    <a href="lista.html?editoria=Rio Branco">Rio Branco <span>02</span></a>
+    <a href="lista.html?editoria=Interior">Interior <span>03</span></a>
+    <a href="lista.html?editoria=Política">Política <span>04</span></a>
+    <a href="lista.html?editoria=Economia">Economia <span>05</span></a>
+    <a href="lista.html?editoria=Amazônia">Amazônia <span>06</span></a>
+    <a href="lista.html?editoria=Esporte">Esporte <span>07</span></a>
+    <a href="lista.html?editoria=Cultura">Cultura <span>08</span></a>
   </nav>
-  <a href="#newsletter" class="btn btn--primary" style="margin-top:28px;align-self:flex-start">Receba no WhatsApp <span class="btn__arrow"><svg><use href="#i-arrow"/></svg></span></a>
+  <a href="index.html#newsletter" class="btn btn--primary" data-link="whatsapp_canal" style="margin-top:28px;align-self:flex-start">Receba no WhatsApp <span class="btn__arrow"><svg><use href="#i-arrow"/></svg></span></a>
 </div>
 
 <!-- Busca -->
@@ -481,14 +395,15 @@
       <button type="button" class="icon-btn" data-close-search aria-label="Fechar busca"><svg><use href="#i-close"/></svg></button>
     </div>
     <div class="search__tags">
-      <a class="chip" href="#">BR-364</a><a class="chip" href="#">Rio Acre</a><a class="chip" href="#">Cruzeiro do Sul</a><a class="chip" href="#">Concursos</a><a class="chip" href="#">Previsão do tempo</a>
+      <a class="chip" href="lista.html?q=BR-364">BR-364</a><a class="chip" href="lista.html?q=Rio%20Acre">Rio Acre</a><a class="chip" href="lista.html?q=Cruzeiro%20do%20Sul">Cruzeiro do Sul</a><a class="chip" href="lista.html?q=Concursos">Concursos</a><a class="chip" href="lista.html?q=Previs%C3%A3o%20do%20tempo">Previsão do tempo</a>
     </div>
   </form>
 </div>
 
-<script src="assets/js/config.js?v=2"></script>
-<script src="assets/js/dados.js?v=1"></script>
-<script src="assets/js/main.js?v=4"></script>
-<script src="assets/js/capa.js?v=4"></script>
+<script src="assets/js/config.js?v=3"></script>
+<script src="assets/js/dados.js?v=3"></script>
+<script src="assets/js/main.js?v=5"></script>
+<script src="assets/js/site.js?v=2"></script>
+<script src="assets/js/capa.js?v=5"></script>
 </body>
 </html>

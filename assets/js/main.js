@@ -48,19 +48,10 @@
   $$('[data-close-search]').forEach(b => b.addEventListener('click', closeSearch));
   if (search) {
     search.addEventListener('click', e => { if (e.target === search) closeSearch(); });
-    $('[data-search-form]', search).addEventListener('submit', e => e.preventDefault());
   }
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') { closeSearch(); if (drawer) { drawer.classList.remove('is-open'); lock(false); } }
     if (e.key === '/' && search && !/input|textarea/i.test(document.activeElement.tagName)) { e.preventDefault(); openSearch(); }
-  });
-
-  // Newsletter (demonstração — sem envio real)
-  const form = $('[data-subscribe]');
-  if (form) form.addEventListener('submit', e => {
-    e.preventDefault();
-    $('[data-subscribe-ok]').textContent = 'Pronto! Você vai receber o boletim do Acre amanhã às 7h.';
-    form.reset();
   });
 
   // Tema claro/escuro (o padrão fica em assets/js/tema.js)

@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
   <script src="assets/js/tema.js?v=3"></script>
-  <link rel="stylesheet" href="assets/css/style.css?v=6">
+  <link rel="stylesheet" href="assets/css/style.css?v=7">
 </head>
 <body class="is-loading">
 
@@ -48,12 +48,12 @@
   <div class="wrap">
     <div class="topbar__left">
       <span data-today>Quarta-feira, 25 de novembro</span>
-      <span class="topbar__weather hide-sm"><svg width="14" height="14"><use href="#i-sun"/></svg> Rio Branco <b>33°</b></span>
+      <span class="topbar__weather hide-sm" data-clima-topo hidden><svg width="14" height="14"><use href="#i-sun"/></svg> Rio Branco <b></b></span>
     </div>
     <div class="topbar__right">
-      <a href="#" class="hide-sm">Anuncie</a>
-      <a href="#" class="hide-sm">Expediente</a>
-      <a href="#">Envie sua pauta</a>
+      <a href="pagina.html?p=anuncie" class="hide-sm" data-pagina="anuncie">Anuncie</a>
+      <a href="pagina.html?p=expediente" class="hide-sm" data-pagina="expediente">Expediente</a>
+      <a href="pagina.html?p=contato" data-link="pauta" data-pagina="contato">Envie sua pauta</a>
     </div>
   </div>
 </div>
@@ -68,19 +68,19 @@
 
     <nav class="nav" aria-label="Editorias">
       <a href="index.html">Início</a>
-      <a href="index.html#ultimas">Rio Branco</a>
-      <a href="index.html#municipios">Interior</a>
-      <a href="index.html#ultimas">Política</a>
-      <a href="index.html#ultimas">Economia</a>
-      <a href="index.html#amazonia" class="is-active">Amazônia</a>
-      <a href="index.html#ultimas">Esporte</a>
-      <a href="index.html#ultimas">Cultura</a>
+      <a href="lista.html?editoria=Rio Branco">Rio Branco</a>
+      <a href="lista.html?editoria=Interior">Interior</a>
+      <a href="lista.html?editoria=Política">Política</a>
+      <a href="lista.html?editoria=Economia">Economia</a>
+      <a href="lista.html?editoria=Amazônia">Amazônia</a>
+      <a href="lista.html?editoria=Esporte">Esporte</a>
+      <a href="lista.html?editoria=Cultura">Cultura</a>
     </nav>
 
     <div class="header__actions">
       <button class="icon-btn theme-btn" data-theme-toggle aria-label="Mudar tema"><svg class="i-moon"><use href="#i-moon"/></svg><svg class="i-sun"><use href="#i-sun"/></svg></button>
       <button class="icon-btn search-btn" data-open-search aria-label="Buscar"><svg><use href="#i-search"/></svg></button>
-      <a href="index.html#newsletter" class="btn btn--primary header__cta">Receba no WhatsApp <span class="btn__arrow"><svg><use href="#i-arrow"/></svg></span></a>
+      <a href="index.html#newsletter" class="btn btn--primary header__cta" data-link="whatsapp_canal">Receba no WhatsApp <span class="btn__arrow"><svg><use href="#i-arrow"/></svg></span></a>
       <button class="icon-btn menu-btn" data-open-menu aria-label="Abrir menu"><svg><use href="#i-menu"/></svg></button>
     </div>
   </div>
@@ -93,7 +93,7 @@
 <!-- ANÚNCIO "topo" (970 × 90 / celular 320 × 100): troque o <a class="ad__slot"> pelo código do anúncio -->
 <div class="ad ad--leader" data-ad="topo">
   <span class="ad__label">Publicidade</span>
-  <a class="ad__slot" href="#anuncie"><span><b>Anuncie aqui</b><span class="ad__size--d">970 × 90</span><span class="ad__size--m">320 × 100</span></span></a>
+  <a class="ad__slot" href="pagina.html?p=anuncie"><span><b>Anuncie aqui</b><span class="ad__size--d">970 × 90</span><span class="ad__size--m">320 × 100</span></span></a>
 </div></div></div>
   <div class="wrap" data-artigo-conteudo>
     <nav class="crumbs" aria-label="Você está em">
@@ -128,7 +128,7 @@
 <!-- ANÚNCIO "dentro-materia" (300 × 250): entra sozinho depois do 2º parágrafo. Troque o <a class="ad__slot"> pelo código do anúncio -->
 <div class="ad ad--rect ad--inline" data-ad="dentro-materia">
   <span class="ad__label">Publicidade</span>
-  <a class="ad__slot" href="#anuncie"><span><b>Anuncie aqui</b>300 × 250</span></a>
+  <a class="ad__slot" href="pagina.html?p=anuncie"><span><b>Anuncie aqui</b>300 × 250</span></a>
 </div>
       </article>
 
@@ -136,7 +136,7 @@
 <!-- ANÚNCIO "lateral-materia" (300 × 600 / celular 300 × 250): troque o <a class="ad__slot"> pelo código do anúncio -->
 <div class="ad ad--half" data-ad="lateral-materia">
   <span class="ad__label">Publicidade</span>
-  <a class="ad__slot" href="#anuncie"><span><b>Anuncie aqui</b><span class="ad__size--d">300 × 600</span><span class="ad__size--m">300 × 250</span></span></a>
+  <a class="ad__slot" href="pagina.html?p=anuncie"><span><b>Anuncie aqui</b><span class="ad__size--d">300 × 600</span><span class="ad__size--m">300 × 250</span></span></a>
 </div>
         <div class="box">
           <h4>Leia também</h4>
@@ -159,7 +159,7 @@
 <!-- ANÚNCIO "fim-materia" (970 × 90 / celular 320 × 100): troque o <a class="ad__slot"> pelo código do anúncio -->
 <div class="ad ad--leader" data-ad="fim-materia">
   <span class="ad__label">Publicidade</span>
-  <a class="ad__slot" href="#anuncie"><span><b>Anuncie aqui</b><span class="ad__size--d">970 × 90</span><span class="ad__size--m">320 × 100</span></span></a>
+  <a class="ad__slot" href="pagina.html?p=anuncie"><span><b>Anuncie aqui</b><span class="ad__size--d">970 × 90</span><span class="ad__size--m">320 × 100</span></span></a>
 </div></div></div>
   <section class="section">
     <div class="wrap">
@@ -185,31 +185,31 @@
           <span class="logo__mark">ORIGEM<span class="logo__68">68<svg viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 30 C 22 40, 44 20, 66 13 S 92 6, 100 2 C 92 15, 74 21, 58 26 S 20 40, 0 30Z" fill="url(#sw)"/></svg></span></span>
           <span class="logo__tag">Portal de notícias do Acre</span>
         </a>
-        <p>Jornalismo independente feito no Acre, para o Acre. Da nossa terra. Do nosso tempo.</p>
+        <p data-site-sobre>Jornalismo independente feito no Acre, para o Acre. Da nossa terra. Do nosso tempo.</p>
         <div class="socials">
-          <a class="icon-btn" href="#" aria-label="Instagram"><svg><use href="#i-ig"/></svg></a>
-          <a class="icon-btn" href="#" aria-label="YouTube"><svg><use href="#i-yt"/></svg></a>
-          <a class="icon-btn" href="#" aria-label="WhatsApp"><svg><use href="#i-wa"/></svg></a>
-          <a class="icon-btn" href="#" aria-label="X"><svg><use href="#i-x"/></svg></a>
+          <a class="icon-btn" href="#" aria-label="Instagram" data-link="instagram" hidden><svg><use href="#i-ig"/></svg></a>
+          <a class="icon-btn" href="#" aria-label="YouTube" data-link="youtube" hidden><svg><use href="#i-yt"/></svg></a>
+          <a class="icon-btn" href="#" aria-label="WhatsApp" data-link="whatsapp" hidden><svg><use href="#i-wa"/></svg></a>
+          <a class="icon-btn" href="#" aria-label="X" data-link="x" hidden><svg><use href="#i-x"/></svg></a>
         </div>
       </div>
       <div>
         <h4>Editorias</h4>
-        <ul><li><a href="#">Rio Branco</a></li><li><a href="#">Interior</a></li><li><a href="#">Política</a></li><li><a href="#">Economia</a></li><li><a href="#">Amazônia</a></li><li><a href="#">Esporte</a></li></ul>
+        <ul><li><a href="lista.html?editoria=Rio Branco">Rio Branco</a></li><li><a href="lista.html?editoria=Interior">Interior</a></li><li><a href="lista.html?editoria=Política">Política</a></li><li><a href="lista.html?editoria=Economia">Economia</a></li><li><a href="lista.html?editoria=Amazônia">Amazônia</a></li><li><a href="lista.html?editoria=Esporte">Esporte</a></li></ul>
       </div>
       <div>
         <h4>Origem 68</h4>
-        <ul><li><a href="#">Quem somos</a></li><li><a href="#">Expediente</a></li><li><a href="#">Código de ética</a></li><li><a href="#">Trabalhe conosco</a></li><li><a href="#anuncie" id="anuncie">Anuncie</a></li></ul>
+        <ul><li><a href="pagina.html?p=quem-somos" data-pagina="quem-somos">Quem somos</a></li><li><a href="pagina.html?p=expediente" data-pagina="expediente">Expediente</a></li><li><a href="pagina.html?p=codigo-de-etica" data-pagina="codigo-de-etica">Código de ética</a></li><li><a href="pagina.html?p=trabalhe-conosco" data-pagina="trabalhe-conosco">Trabalhe conosco</a></li><li><a href="pagina.html?p=anuncie" id="anuncie" data-pagina="anuncie">Anuncie</a></li></ul>
       </div>
       <div>
         <h4>Fale com a redação</h4>
-        <ul><li><a href="#">Envie sua pauta</a></li><li><a href="#">WhatsApp da redação</a></li><li><a href="#">Correções</a></li><li><a href="#">Política de privacidade</a></li><li><a href="painel.html" rel="nofollow">Painel da redação</a></li></ul>
+        <ul><li><a href="pagina.html?p=contato" data-link="pauta" data-pagina="contato">Envie sua pauta</a></li><li><a href="pagina.html?p=contato" data-link="whatsapp_redacao" data-pagina="contato">WhatsApp da redação</a></li><li><a href="pagina.html?p=correcoes" data-pagina="correcoes">Correções</a></li><li><a href="pagina.html?p=privacidade" data-pagina="privacidade">Política de privacidade</a></li><li><a href="painel.html" rel="nofollow">Painel da redação</a></li></ul>
       </div>
     </div>
     <div class="footer__word" aria-hidden="true">ORIGEM68</div>
     <div class="footer__bottom">
       <span>© <span data-year>2026</span> Origem 68 · Rio Branco, Acre</span>
-      <span>Conteúdo ilustrativo — matérias de exemplo para o layout.</span>
+      <span data-site-aviso></span>
     </div>
   </div>
 </footer>
@@ -219,7 +219,7 @@
   <a href="index.html" class="is-active" aria-label="Início"><svg><use href="#i-home"/></svg></a>
   <a href="index.html#municipios" aria-label="Municípios"><svg><use href="#i-pin"/></svg></a>
   <button data-open-search aria-label="Buscar"><svg><use href="#i-search"/></svg></button>
-  <a href="index.html#newsletter" aria-label="Podcast e vídeos"><svg><use href="#i-mic"/></svg></a>
+  <a href="index.html#midia" aria-label="Vídeos e podcasts"><svg><use href="#i-mic"/></svg></a>
   <button data-open-menu aria-label="Menu"><svg><use href="#i-menu"/></svg></button>
 </nav>
 
@@ -231,15 +231,15 @@
   </div>
   <nav>
     <a href="index.html">Início <span>01</span></a>
-    <a href="index.html#ultimas">Rio Branco <span>02</span></a>
-    <a href="index.html#municipios">Interior <span>03</span></a>
-    <a href="index.html#ultimas">Política <span>04</span></a>
-    <a href="index.html#ultimas">Economia <span>05</span></a>
-    <a href="index.html#amazonia">Amazônia <span>06</span></a>
-    <a href="index.html#ultimas">Esporte <span>07</span></a>
-    <a href="index.html#ultimas">Cultura <span>08</span></a>
+    <a href="lista.html?editoria=Rio Branco">Rio Branco <span>02</span></a>
+    <a href="lista.html?editoria=Interior">Interior <span>03</span></a>
+    <a href="lista.html?editoria=Política">Política <span>04</span></a>
+    <a href="lista.html?editoria=Economia">Economia <span>05</span></a>
+    <a href="lista.html?editoria=Amazônia">Amazônia <span>06</span></a>
+    <a href="lista.html?editoria=Esporte">Esporte <span>07</span></a>
+    <a href="lista.html?editoria=Cultura">Cultura <span>08</span></a>
   </nav>
-  <a href="index.html#newsletter" class="btn btn--primary" style="margin-top:28px;align-self:flex-start">Receba no WhatsApp <span class="btn__arrow"><svg><use href="#i-arrow"/></svg></span></a>
+  <a href="index.html#newsletter" class="btn btn--primary" data-link="whatsapp_canal" style="margin-top:28px;align-self:flex-start">Receba no WhatsApp <span class="btn__arrow"><svg><use href="#i-arrow"/></svg></span></a>
 </div>
 
 <!-- Busca -->
@@ -251,14 +251,15 @@
       <button type="button" class="icon-btn" data-close-search aria-label="Fechar busca"><svg><use href="#i-close"/></svg></button>
     </div>
     <div class="search__tags">
-      <a class="chip" href="#">BR-364</a><a class="chip" href="#">Rio Acre</a><a class="chip" href="#">Cruzeiro do Sul</a><a class="chip" href="#">Concursos</a><a class="chip" href="#">Previsão do tempo</a>
+      <a class="chip" href="lista.html?q=BR-364">BR-364</a><a class="chip" href="lista.html?q=Rio%20Acre">Rio Acre</a><a class="chip" href="lista.html?q=Cruzeiro%20do%20Sul">Cruzeiro do Sul</a><a class="chip" href="lista.html?q=Concursos">Concursos</a><a class="chip" href="lista.html?q=Previs%C3%A3o%20do%20tempo">Previsão do tempo</a>
     </div>
   </form>
 </div>
 
-<script src="assets/js/config.js?v=2"></script>
-<script src="assets/js/dados.js?v=1"></script>
-<script src="assets/js/main.js?v=4"></script>
-<script src="assets/js/artigo.js?v=2"></script>
+<script src="assets/js/config.js?v=3"></script>
+<script src="assets/js/dados.js?v=3"></script>
+<script src="assets/js/main.js?v=5"></script>
+<script src="assets/js/site.js?v=2"></script>
+<script src="assets/js/artigo.js?v=3"></script>
 </body>
 </html>

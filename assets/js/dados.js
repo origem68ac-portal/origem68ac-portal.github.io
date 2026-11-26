@@ -52,6 +52,13 @@
     return `<div class="ph ${n.foto_url ? 'has-img' : phVariante(n.slug)}" data-credit="${esc(n.foto_credito || '')}">${img}${extra}</div>`;
   }
 
+  // Links digitados no painel: só http(s), mailto e tel
+  const linkSeguro = u => { u = String(u || '').trim(); return /^(https?:\/\/|mailto:|tel:)/i.test(u) ? u : ''; };
+  const youtubeId = u => { const m = String(u || '').match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/))([\w-]{11})/); return m ? m[1] : ''; };
+
+  const EDITORIAS = ['Rio Branco', 'Interior', 'Política', 'Economia', 'Amazônia', 'Saúde', 'Educação', 'Segurança', 'Esporte', 'Cultura', 'Negócios', 'Cidades', 'Brasil'];
+  const MUNICIPIOS = ['Acrelândia', 'Assis Brasil', 'Brasiléia', 'Bujari', 'Capixaba', 'Cruzeiro do Sul', 'Epitaciolândia', 'Feijó', 'Jordão', 'Mâncio Lima', 'Manoel Urbano', 'Marechal Thaumaturgo', 'Plácido de Castro', 'Porto Acre', 'Porto Walter', 'Rio Branco', 'Rodrigues Alves', 'Santa Rosa do Purus', 'Sena Madureira', 'Senador Guiomard', 'Tarauacá', 'Xapuri'];
+
   /* ---------------- conteúdo de exemplo ---------------- */
   const h = n => new Date(Date.now() - n * 3600e3).toISOString();
   const txt = 'Este é um texto de exemplo do modo demonstração. Pelo painel da redação, você pode editar esta notícia, trocar a foto ou apagá-la.\n\nAs notícias publicadas aparecem na capa automaticamente, na ordem em que foram publicadas.';
@@ -85,7 +92,24 @@
   };
   const porData = (a, b) => new Date(b.publicado_em || b.criado_em) - new Date(a.publicado_em || a.criado_em);
 
+  const BKEY = 'o68-demo-blocos';
+  const blocosLer = () => { try { return JSON.parse(localStorage.getItem(BKEY)) || {}; } catch (_) { return {}; } };
+  const semAcento = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
   const demo = {
+    async lista({ editoria, municipio, q, limite = 18, pular = 0 } = {}) {
+      const t = semAcento(q);
+      const l = demoLer().filter(n => n.status === 'publicado'
+        && (!editoria || n.editoria === editoria) && (!municipio || n.municipio === municipio)
+        && (!t || semAcento(n.titulo + ' ' + n.linha_fina).includes(t))).sort(porData);
+      return { itens: l.slice(pular, pular + limite), mais: l.length > pular + limite };
+    },
+    async blocos() { return blocosLer(); },
+    async salvarBloco(chave, dados) { const b = blocosLer(); b[chave] = dados; try { localStorage.setItem(BKEY, JSON.stringify(b)); } catch (_) {} },
+    async apagarBloco(chave) { const b = blocosLer(); delete b[chave]; try { localStorage.setItem(BKEY, JSON.stringify(b)); } catch (_) {} },
+    async inscrever() {},
+    async inscritos() { return []; },
+    async roboVistos() { return []; },
     async publicadas(limite = 30) { return demoLer().filter(n => n.status === 'publicado').sort(porData).slice(0, limite); },
     async maisLidas(limite = 4) { return demoLer().filter(n => n.status === 'publicado').sort((a, b) => b.leituras - a.leituras).slice(0, limite); },
     async porSlug(slug) { return demoLer().find(n => n.slug === slug && n.status === 'publicado') || null; },
@@ -137,9 +161,37 @@
   const traduzErro = m => /Invalid login/i.test(m) ? 'E-mail ou senha incorretos.'
     : /duplicate key.*slug/i.test(m) ? 'Já existe uma notícia com esse endereço (slug).'
     : /row-level security/i.test(m) ? 'Seu usuário ainda não está liberado como editor.' : m;
-  const CAMPOS = 'id,slug,titulo,linha_fina,corpo,editoria,municipio,foto_url,foto_credito,autor,posicao,status,publicado_em,leituras,criado_em,atualizado_em';
+  const CAMPOS = 'id,slug,titulo,linha_fina,corpo,editoria,municipio,foto_url,foto_credito,autor,posicao,status,publicado_em,leituras,criado_em,atualizado_em,fonte_nome,fonte_url,origem';
+  const CAMPOS_LISTA = 'id,slug,titulo,linha_fina,editoria,municipio,foto_url,foto_credito,autor,posicao,publicado_em,corpo';
+  const limpaBusca = q => String(q || '').replace(/[,()%*\\'"]/g, ' ').trim().slice(0, 80);
 
   const remoto = {
+    async lista({ editoria, municipio, q, limite = 18, pular = 0 } = {}) {
+      const c = await cliente();
+      let r = c.from('noticias').select(CAMPOS_LISTA).eq('status', 'publicado');
+      if (editoria) r = r.eq('editoria', editoria);
+      if (municipio) r = r.eq('municipio', municipio);
+      const t = limpaBusca(q);
+      if (t) r = r.or(`titulo.ilike.%${t}%,linha_fina.ilike.%${t}%,corpo.ilike.%${t}%`);
+      const itens = ok(await r.order('publicado_em', { ascending: false }).range(pular, pular + limite));
+      return { itens: itens.slice(0, limite), mais: itens.length > limite };
+    },
+    async blocos() {
+      const c = await cliente();
+      return Object.fromEntries(ok(await c.from('blocos').select('chave,dados')).map(b => [b.chave, b.dados]));
+    },
+    async salvarBloco(chave, dados) {
+      const c = await cliente();
+      ok(await c.from('blocos').upsert({ chave, dados, atualizado_em: new Date().toISOString() }));
+    },
+    async apagarBloco(chave) { const c = await cliente(); ok(await c.from('blocos').delete().eq('chave', chave)); },
+    async inscrever(email) {
+      const c = await cliente();
+      const { error } = await c.from('inscritos').insert({ email: String(email).trim().toLowerCase() });
+      if (error && !/duplicate key/i.test(error.message)) throw new Error('Não foi possível concluir a inscrição. Confira o e-mail.');
+    },
+    async inscritos() { const c = await cliente(); return ok(await c.from('inscritos').select('email,criado_em').order('criado_em', { ascending: false }).limit(5000)); },
+    async roboVistos(limite = 60) { const c = await cliente(); return ok(await c.from('robo_vistos').select('*').order('criado_em', { ascending: false }).limit(limite)); },
     async publicadas(limite = 30) { const c = await cliente(); return ok(await c.from('noticias').select(CAMPOS).eq('status', 'publicado').order('publicado_em', { ascending: false }).limit(limite)); },
     async maisLidas(limite = 4) { const c = await cliente(); return ok(await c.from('noticias').select('slug,titulo,editoria').eq('status', 'publicado').gte('publicado_em', new Date(Date.now() - 7 * 864e5).toISOString()).order('leituras', { ascending: false }).limit(limite)); },
     async porSlug(slug) { const c = await cliente(); return ok(await c.from('noticias').select(CAMPOS).eq('slug', slug).eq('status', 'publicado').maybeSingle()); },
@@ -147,6 +199,7 @@
     async entrar(email, senha) { const c = await cliente(); return ok(await c.auth.signInWithPassword({ email, password: senha })).user; },
     async sair() { const c = await cliente(); await c.auth.signOut(); },
     async sessao() { const c = await cliente(); const { data } = await c.auth.getSession(); return data.session ? data.session.user : null; },
+    async token() { const c = await cliente(); const { data } = await c.auth.getSession(); return data.session ? data.session.access_token : ''; },
     async todas() { const c = await cliente(); return ok(await c.from('noticias').select(CAMPOS).order('criado_em', { ascending: false }).limit(300)); },
     async salvar(n) {
       const c = await cliente(); const { id, leituras, criado_em, atualizado_em, ...dados } = n;
@@ -166,6 +219,6 @@
   window.O68 = {
     modo: MODO,
     api: MODO === 'supabase' ? remoto : demo,
-    util: { esc, slugify, corpoHTML, minutosLeitura, tempoRelativo, dataHora, fotoHTML }
+    util: { esc, slugify, corpoHTML, minutosLeitura, tempoRelativo, dataHora, fotoHTML, youtubeId, linkSeguro, EDITORIAS, MUNICIPIOS }
   };
 })();

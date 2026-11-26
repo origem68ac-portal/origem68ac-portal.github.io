@@ -11,5 +11,7 @@
    ========================================================= */
 window.O68_CONFIG = {
   supabaseUrl: "https://vsfheoticrdosunjmhvo.supabase.co",
-  supabaseChave: "sb_publishable_AcscqZ7XdNM1D6iOItPVRA_ZCiva2ZU"
+  supabaseChave: "sb_publishable_AcscqZ7XdNM1D6iOItPVRA_ZCiva2ZU",
+  // Robô de notícias (Cloudflare Worker) — usado pelos botões da aba "Robô" no painel
+  roboUrl: "https://origem68-robo.origem68ac.workers.dev"
 };
