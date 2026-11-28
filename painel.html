@@ -536,7 +536,15 @@
       <h2 data-oferta-titulo>Nova oferta</h2>
       <div class="f"><label>Link de afiliado</label>
         <div style="display:flex;gap:8px"><input class="in" name="link" type="url" required placeholder="https://mercadolivre.com/sec/…"><button type="button" class="btn btn--ghost btn--sm" data-oferta-buscar style="white-space:nowrap">Buscar dados do link</button></div>
-        <small>Cole o link e clique em “Buscar dados” para tentar puxar nome e foto do produto (funciona melhor com Mercado Livre e Amazon).</small></div>
+        <small>Mercado Livre: pode colar o link <b>comum</b> do produto (o da barra do navegador ou do “Compartilhar”): o painel coloca o seu código de afiliado sozinho. Depois clique em “Buscar dados” para puxar nome, foto e preço.</small></div>
+      <details class="f" style="margin-top:-4px"><summary style="cursor:pointer;font-size:13px;color:var(--dim)">Códigos de afiliado do Mercado Livre</summary>
+        <div class="grid3" style="margin-top:8px">
+          <div class="f"><label>Etiqueta (matt_word)</label><input class="in" name="ml_word" form="ml-codigos"></div>
+          <div class="f"><label>ID da ferramenta (matt_tool)</label><input class="in" name="ml_tool" form="ml-codigos"></div>
+          <div class="f"><label>&nbsp;</label><button type="button" class="btn btn--ghost btn--sm" name="ml_salvar">Salvar códigos</button></div>
+        </div>
+        <small>Vêm do seu link de afiliado (meli.la/…). Só troque se o Mercado Livre mudar o seu código.</small>
+      </details>
       <div class="grid2">
         <div class="f"><label>Nome do produto</label><input class="in" name="titulo" required maxlength="200"></div>
         <div class="f"><label>Loja</label>
@@ -851,7 +859,7 @@
 })();
 </script>
 <script src="assets/js/painel-site.js?v=16"></script>
-<script src="assets/js/painel-extra.js?v=16"></script>
+<script src="assets/js/painel-extra.js?v=17"></script>
 <script src="assets/js/painel-dash.js?v=16"></script>
 <script src="assets/js/painel-insta.js?v=16"></script>
 </body>

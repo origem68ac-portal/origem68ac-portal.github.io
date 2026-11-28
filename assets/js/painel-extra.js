@@ -96,7 +96,42 @@
     msgO('Enviando foto…');
     try { fo.elements.imagem_url.value = await api.enviarArquivo(f, 'ofertas'); prevO(); msgO('Foto pronta.', 'ok'); } catch (err) { msgO(err.message, 'err'); }
   });
+  /* Mercado Livre: transforma qualquer link comum de produto em link de afiliado
+     (acrescenta matt_word e matt_tool, os códigos do programa de afiliados). Links curtos
+     (meli.la, mercadolivre.com/sec) já são de afiliado e ficam como estão. */
+  let afil = null;
+  async function codigosML() {
+    if (afil) return afil;
+    try { afil = (await api.blocos()).afiliados || {}; } catch (_) { afil = {}; }
+    afil = { ml_word: afil.ml_word || 'omaorcosmaia1', ml_tool: afil.ml_tool || '78014764', ...afil };
+    if ($('[name="ml_word"]')) { $('[name="ml_word"]').value = afil.ml_word; $('[name="ml_tool"]').value = afil.ml_tool; }
+    return afil;
+  }
+  function linkAfiliadoML(link, c) {
+    let u; try { u = new URL(link); } catch (_) { return link; }
+    if (!/(^|\.)mercadoli(vre|bre)\.com(\.br)?$/i.test(u.hostname) || /^\/sec\//.test(u.pathname)) return link;
+    if (!c.ml_word || !c.ml_tool) return link;
+    // limpa rastreios de outras pessoas e da busca, mantém o produto
+    [...u.searchParams.keys()].forEach(k => { if (/^(matt_|tracking_id|reco_|c_id|c_uid|sid|position|search_layout|type|deal_print_id|polycard_client|wid|pdp_filters|ref|forceInApp)/i.test(k)) u.searchParams.delete(k); });
+    u.hash = '';
+    u.searchParams.set('matt_word', c.ml_word);
+    u.searchParams.set('matt_tool', c.ml_tool);
+    return u.toString();
+  }
+  async function converterLink() {
+    const antes = fo.elements.link.value.trim();
+    const depois = linkAfiliadoML(antes, await codigosML());
+    if (depois !== antes) { fo.elements.link.value = depois; return true; }
+    return false;
+  }
+  fo.elements.link.addEventListener('change', async () => { if (await converterLink()) msgO('Link do Mercado Livre convertido para o seu link de afiliado. Clique em “Buscar dados do link”.', 'ok'); });
+  if ($('[name="ml_salvar"]')) $('[name="ml_salvar"]').addEventListener('click', async () => {
+    const dados = { ...(await codigosML()), ml_word: $('[name="ml_word"]').value.trim(), ml_tool: $('[name="ml_tool"]').value.trim() };
+    try { await api.salvarBloco('afiliados', dados); afil = dados; msgO('Códigos de afiliado salvos.', 'ok'); } catch (err) { msgO(err.message, 'err'); }
+  });
+
   $('[data-oferta-buscar]').addEventListener('click', async () => {
+    await converterLink();
     const link = fo.elements.link.value.trim(), base = (window.O68_CONFIG || {}).roboUrl;
     if (!/^https?:\/\//.test(link)) return msgO('Cole o link primeiro.', 'err');
     if (!base) return msgO('Robô não configurado.', 'err');
@@ -108,11 +143,14 @@
       if (d.titulo && !fo.elements.titulo.value) fo.elements.titulo.value = d.titulo.slice(0, 200);
       if (d.imagem && !fo.elements.imagem_url.value) { fo.elements.imagem_url.value = d.imagem; prevO(); }
       if (d.loja) fo.elements.loja.value = d.loja;
+      if (d.preco && !fo.elements.preco.value) fo.elements.preco.value = d.preco;
+      if (d.preco_antigo && !fo.elements.preco_antigo.value) fo.elements.preco_antigo.value = d.preco_antigo;
       msgO(d.titulo || d.imagem ? 'Dados encontrados. Confira e complete o preço.' : 'A loja não liberou os dados; preencha à mão.', d.titulo ? 'ok' : '');
     } catch (err) { msgO(err.message + ' Preencha à mão.', 'err'); }
   });
   fo.addEventListener('submit', async e => {
     e.preventDefault();
+    await converterLink();
     const o = { ...(atual ? { id: atual.id } : {}) };
     ['link', 'titulo', 'loja', 'preco', 'preco_antigo', 'descricao', 'imagem_url'].forEach(k => { o[k] = fo.elements[k].value.trim() || null; });
     o.ordem = parseInt(fo.elements.ordem.value, 10) || 0; o.destaque = fo.elements.destaque.checked; o.ativo = fo.elements.ativo.checked;
@@ -130,6 +168,6 @@
   $('[data-abas]').addEventListener('click', async e => {
     const b = e.target.closest('[data-aba]'); if (!b) return;
     if (b.dataset.aba === 'anuncios') { try { anuncios = (await api.blocos()).anuncios || {}; } catch (_) {} desenharAnuncios(); }
-    if (b.dataset.aba === 'ofertas') { abrirOferta(null); carregarOfertas(); }
+    if (b.dataset.aba === 'ofertas') { abrirOferta(null); carregarOfertas(); afil = null; codigosML(); }
   });
 })();
