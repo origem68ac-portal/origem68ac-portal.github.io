@@ -162,6 +162,20 @@
     .fonte__res ul { margin: 4px 0 0 18px; }
     @media (max-width: 720px) { .fonte__l2 { grid-template-columns: 1fr; } }
     .st--desc { background: rgba(229,83,61,.12); color: #e5533d; }
+    .ig { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 440px); gap: 22px; align-items: start; }
+    .ig__prev { position: sticky; top: 86px; }
+    .ig__tela { border-radius: 16px; overflow: hidden; border: 1px solid var(--line-2); background: var(--bg-2); }
+    .ig__tela canvas { display: block; width: 100%; height: auto; }
+    .ig__dim { display: block; color: var(--dim); font-size: 12px; margin: 6px 0 2px; }
+    .ig__seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; padding: 4px; border: 1px solid var(--line-2); border-radius: 14px; }
+    .ig__seg button { padding: 9px 8px; border-radius: 10px; font-size: 14px; font-weight: 600; color: var(--muted); line-height: 1.2; }
+    .ig__seg button small { display: block; font-size: 11px; font-weight: 500; opacity: .75; margin-top: 2px; }
+    .ig__seg button.is-on { background: var(--text); color: var(--bg); }
+    .ig__range { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .ig__range label { display: grid; gap: 4px; font-size: 12.5px; font-weight: 600; color: var(--muted); }
+    .ig__range input { width: 100%; accent-color: var(--orange); }
+    .ig__check { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--muted); margin-top: 12px; }
+    @media (max-width: 900px) { .ig { grid-template-columns: 1fr; } .ig__prev { position: static; order: -1; max-width: 420px; width: 100%; margin: 0 auto; } }
     [hidden] { display: none !important; }
 
     @media (max-width: 900px) {
@@ -206,6 +220,7 @@
       <button data-aba="site">Capa e site</button>
       <button data-aba="anuncios">Anúncios</button>
       <button data-aba="ofertas">Ofertas</button>
+      <button data-aba="insta">Instagram</button>
       <button data-aba="robo">Robô</button>
       <button data-aba="inscritos">Inscritos</button>
     </nav>
@@ -524,6 +539,47 @@
     <div class="p-card"><h2>Suas ofertas</h2><div class="p-tabela" data-ofertas-lista><p class="empty">Carregando…</p></div></div>
   </main>
 
+  <!-- ========== INSTAGRAM ========== -->
+  <main class="p-cfg" data-aba-view="insta" hidden>
+    <h1>Posts para o Instagram</h1>
+    <p class="sub">Escolha uma notícia e baixe o card pronto. Feed em 1080 × 1440, Stories em 1080 × 1920 e Reels em vídeo de 8 segundos, nos temas escuro e claro. No celular, o botão abre o compartilhamento direto para o Instagram.</p>
+    <div class="ig">
+      <div class="ig__form">
+        <div class="p-card">
+          <h2>1. Notícia</h2>
+          <div class="f"><input class="in" name="ig-busca" type="search" placeholder="Buscar pelo título…" aria-label="Buscar notícia"></div>
+          <div class="f"><select class="in" data-ig-sel aria-label="Notícia"><option>Carregando…</option></select></div>
+          <div class="f"><label>Título no card</label><textarea class="in" name="ig-titulo" rows="3" maxlength="160"></textarea><small>Encurte se quiser: títulos de até 12 palavras funcionam melhor.</small></div>
+          <div class="f"><label>Linha fina (opcional)</label><textarea class="in" name="ig-fina" rows="2" maxlength="220"></textarea></div>
+          <div class="f"><label>Etiqueta</label><input class="in" name="ig-tag" maxlength="28" placeholder="Ex.: Rio Branco, Política, Urgente"></div>
+        </div>
+        <div class="p-card">
+          <h2>2. Formato e tema</h2>
+          <div class="ig__seg"><button type="button" class="is-on" data-ig-fmt="feed">Feed<small>1080 × 1440</small></button><button type="button" data-ig-fmt="stories">Stories<small>1080 × 1920</small></button><button type="button" data-ig-fmt="reels">Reels<small>vídeo 1080 × 1920</small></button></div>
+          <div class="ig__seg" style="margin-top:10px"><button type="button" class="is-on" data-ig-tema="escuro">Tema escuro</button><button type="button" data-ig-tema="claro">Tema claro</button></div>
+        </div>
+        <div class="p-card">
+          <h2>3. Foto</h2>
+          <div class="foto__btns" style="margin-bottom:12px"><label class="btn btn--ghost btn--sm" style="cursor:pointer">Usar outra foto<input type="file" accept="image/*" data-ig-foto hidden></label><button type="button" class="btn btn--ghost btn--sm" data-ig-semfoto>Sem foto</button></div>
+          <div class="ig__range"><label>Horizontal<input type="range" name="ig-fx" min="0" max="100" value="50"></label><label>Vertical<input type="range" name="ig-fy" min="0" max="100" value="50"></label><label>Zoom<input type="range" name="ig-zoom" min="100" max="250" value="100"></label></div>
+          <label class="ig__check"><input type="checkbox" name="ig-guia" checked> Mostrar na prévia a área que o Instagram cobre (Stories e Reels)</label>
+        </div>
+      </div>
+      <div class="ig__prev">
+        <div class="ig__tela"><canvas data-ig-canvas width="1080" height="1440" aria-label="Prévia do post"></canvas></div>
+        <small class="ig__dim" data-ig-dim>1080 × 1440 px</small>
+        <div class="p-save">
+          <button type="button" class="btn btn--primary btn--sm" data-ig-baixar>Baixar imagem (JPG)</button>
+          <button type="button" class="btn btn--primary btn--sm" data-ig-video hidden>Gerar vídeo do Reels</button>
+          <button type="button" class="btn btn--ghost btn--sm" data-ig-todos>Baixar os 4 cards (feed e stories, escuro e claro)</button>
+        </div>
+        <span class="msg" data-ig-msg aria-live="polite"></span>
+        <div class="f" style="margin-top:14px"><label>Legenda sugerida</label><textarea class="in" name="ig-legenda" data-ig-legenda rows="6"></textarea>
+          <div><button type="button" class="btn btn--ghost btn--sm" data-ig-copiar>Copiar legenda</button></div></div>
+      </div>
+    </div>
+  </main>
+
   <!-- ========== ROBÔ ========== -->
   <main class="p-cfg" data-aba-view="robo" hidden>
     <h1>Robô de notícias</h1>
@@ -769,5 +825,6 @@
 <script src="assets/js/painel-site.js?v=15"></script>
 <script src="assets/js/painel-extra.js?v=15"></script>
 <script src="assets/js/painel-dash.js?v=15"></script>
+<script src="assets/js/painel-insta.js?v=16"></script>
 </body>
 </html>
