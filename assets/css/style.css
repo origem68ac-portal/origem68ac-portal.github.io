@@ -472,6 +472,9 @@ html { overflow-x: clip; }
 @media (max-width: 1024px) { .ofertas-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 720px) { .ofertas-grid { grid-template-columns: 1fr 1fr; gap: 12px; } .oferta__corpo { padding: 12px; } .oferta__corpo h3 { font-size: 14.5px; } .oferta__preco b { font-size: 18px; } .oferta__btn { font-size: 12.5px; } }
 
+.article-foto { margin: 28px 0; }
+.article-foto img { display: block; width: 100%; height: auto; max-height: 560px; object-fit: cover; border-radius: 16px; background: var(--line); }
+.article-foto figcaption { margin-top: 8px; font-size: 13px; color: var(--dim); }
 .article-fonte { margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 14px; color: var(--dim); }
 .article-fonte a { color: var(--accent-text); text-decoration: underline; text-underline-offset: 3px; }
 .article-head { max-width: 920px; padding: 22px 0 32px; }

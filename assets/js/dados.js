@@ -22,6 +22,9 @@
     .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
   function corpoHTML(texto) {
     return String(texto || '').replace(/\r/g, '').split(/\n\s*\n/).map(b => b.trim()).filter(Boolean).map(b => {
+      // foto no meio do texto: ![legenda](https://endereço-da-foto)
+      const ft = b.match(/^!\[([^\]]*)\]\((https:\/\/[^\s)]+)\)$/);
+      if (ft) return `<figure class="article-foto"><img src="${esc(fotoLeve(ft[2], 1200))}" data-orig="${esc(ft[2])}" onerror="this.onerror=null;this.src=this.dataset.orig" alt="${esc(ft[1])}" loading="lazy" decoding="async">${ft[1] ? `<figcaption>${esc(ft[1])}</figcaption>` : ''}</figure>`;
       if (b.startsWith('## ')) return `<h2>${inline(b.slice(3))}</h2>`;
       if (b.startsWith('>')) {
         const linhas = b.split('\n').map(l => l.replace(/^>\s?/, ''));
@@ -58,7 +61,7 @@
   const linkSeguro = u => { u = String(u || '').trim(); return /^(https?:\/\/|mailto:|tel:)/i.test(u) ? u : ''; };
   const youtubeId = u => { const m = String(u || '').match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/))([\w-]{11})/); return m ? m[1] : ''; };
 
-  const EDITORIAS = ['Rio Branco', 'Interior', 'Política', 'Economia', 'Amazônia', 'Saúde', 'Educação', 'Segurança', 'Esporte', 'Cultura', 'Negócios', 'Cidades', 'Brasil', 'Tecnologia', 'Curiosidades'];
+  const EDITORIAS = ['Rio Branco', 'Interior', 'Política', 'Economia', 'Amazônia', 'Saúde', 'Educação', 'Segurança', 'Esporte Acreano', 'Esporte', 'Cultura', 'Negócios', 'Cidades', 'Brasil', 'Tecnologia', 'Curiosidades'];
   const MUNICIPIOS = ['Acrelândia', 'Assis Brasil', 'Brasiléia', 'Bujari', 'Capixaba', 'Cruzeiro do Sul', 'Epitaciolândia', 'Feijó', 'Jordão', 'Mâncio Lima', 'Manoel Urbano', 'Marechal Thaumaturgo', 'Plácido de Castro', 'Porto Acre', 'Porto Walter', 'Rio Branco', 'Rodrigues Alves', 'Santa Rosa do Purus', 'Sena Madureira', 'Senador Guiomard', 'Tarauacá', 'Xapuri'];
 
   /* ---------------- conteúdo de exemplo ---------------- */

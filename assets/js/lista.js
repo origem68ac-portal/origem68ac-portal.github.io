@@ -23,7 +23,7 @@
   document.querySelectorAll('.nav a').forEach(a => a.classList.toggle('is-active', filtro.editoria && a.textContent.trim() === filtro.editoria));
 
   // atalhos de editorias
-  const principais = ['Rio Branco', 'Interior', 'Política', 'Economia', 'Amazônia', 'Saúde', 'Educação', 'Segurança', 'Esporte', 'Cultura', 'Brasil', 'Tecnologia', 'Curiosidades'];
+  const principais = ['Rio Branco', 'Interior', 'Política', 'Economia', 'Amazônia', 'Saúde', 'Educação', 'Segurança', 'Esporte Acreano', 'Esporte', 'Cultura', 'Brasil', 'Tecnologia', 'Curiosidades'];
   L('chips').innerHTML = `<a class="chip${!filtro.editoria && !filtro.municipio && !filtro.q ? ' is-on' : ''}" href="lista.html">Todas</a>` +
     principais.map(e => `<a class="chip${filtro.editoria === e ? ' is-on' : ''}" href="lista.html?editoria=${encodeURIComponent(e)}">${esc(e)}</a>`).join('');
 
