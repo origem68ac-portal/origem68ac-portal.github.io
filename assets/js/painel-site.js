@@ -327,7 +327,7 @@
     e.target.disabled = true; roboMsg('Pesquisando rio, dólar, gasolina e boi… (até 30 segundos)');
     try {
       const d = await comandoRobo('/pulso'); const p = d.pulso || {};
-      roboMsg(`Pulso atualizado (${(d.atualizados || []).join(', ') || 'nada novo'}): rio ${p.rio_nivel || '—'} · dólar ${p.dolar_valor || '—'} · gasolina ${p.extra_valor || '—'} · boi ${p.boi_valor || '—'}.`, 'ok');
+      roboMsg(`Pulso atualizado (${(d.atualizados || []).join(', ') || 'nada novo'}): rio ${p.rio_nivel || '—'} · dólar ${p.dolar_valor || '—'} · gasolina ${p.extra_valor || '—'} · boi ${p.boi_valor || '—'}.${(d.erros || []).length ? ' Problemas: ' + d.erros.join(' | ') : ''}`, (d.erros || []).length ? 'err' : 'ok');
       blocos = null;
     } catch (err) { roboMsg(err.message, 'err'); }
     finally { e.target.disabled = false; }
