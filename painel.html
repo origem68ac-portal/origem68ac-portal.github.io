@@ -11,8 +11,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://vsfheoticrdosunjmhvo.supabase.co" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
-  <script src="assets/js/tema.js?v=15"></script>
-  <link rel="stylesheet" href="assets/css/style.css?v=15">
+  <script src="assets/js/tema.js?v=16"></script>
+  <link rel="stylesheet" href="assets/css/style.css?v=16">
   <style>
     body { min-height: 100vh; }
     .p-top { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 14px; height: 68px; padding: 0 clamp(16px, 3vw, 28px); border-bottom: 1px solid var(--line); background: rgba(var(--bgc), .85); backdrop-filter: blur(14px); }
@@ -149,18 +149,38 @@
     .marca-prev--ico { width: 90px; }
     .st--robo { background: rgba(80,140,255,.16); color: #5b8def; }
     .fontes-ajuda { font-size: 13px; color: var(--dim); line-height: 1.55; margin: -4px 0 14px; }
-    .fonte { border: 1px solid var(--line); border-radius: 14px; padding: 12px; margin-bottom: 10px; display: grid; gap: 8px; }
+    /* fontes em quadro (kanban): uma coluna por tipo; arraste o cartão para mudar o tipo */
+    .kanban { display: grid; grid-template-columns: repeat(4, minmax(220px, 1fr)); gap: 12px; overflow-x: auto; padding-bottom: 6px; }
+    .kanban__col { background: color-mix(in srgb, var(--text) 4%, transparent); border: 1px solid var(--line); border-radius: 16px; padding: 10px; min-height: 160px; display: flex; flex-direction: column; gap: 8px; transition: background .15s, border-color .15s; }
+    .kanban__col.is-alvo { border-color: var(--accent, #F26A1B); background: color-mix(in srgb, #F26A1B 10%, transparent); }
+    .kanban__head { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 2px 4px 6px; }
+    .kanban__head b { font-size: 13px; letter-spacing: .04em; text-transform: uppercase; }
+    .kanban__head small { font-size: 11.5px; color: var(--dim); display: block; font-weight: 400; text-transform: none; letter-spacing: 0; }
+    .kanban__n { font-size: 12px; font-weight: 700; min-width: 24px; height: 24px; border-radius: 99px; display: grid; place-items: center; background: var(--line); }
+    .kanban__add { border: 1px dashed var(--line); background: none; color: var(--dim); border-radius: 12px; padding: 9px; font: inherit; font-size: 13px; cursor: pointer; }
+    .kanban__add:hover { color: var(--text); border-color: var(--dim); }
+    .fonte { background: var(--card, var(--bg)); border: 1px solid var(--line); border-radius: 12px; padding: 10px 10px 8px; display: grid; gap: 6px; cursor: grab; box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+    .fonte.is-arrastando { opacity: .4; }
     .fonte.is-off { opacity: .55; }
-    .fonte__l1 { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-    .fonte__l1 [data-k="nome"] { flex: 1 1 170px; } .fonte__l1 .fonte__url { flex: 3 1 300px; }
-    .fonte__l1 select { flex: 1 1 120px; width: auto; }
-    .fonte__l2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .fonte .in { height: 38px; font-size: 13.5px; padding: 0 10px; }
-    .fonte__on { display: flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; white-space: nowrap; }
-    .fonte__res { font-size: 12.5px; color: var(--dim); line-height: 1.5; }
+    .fonte__top { display: flex; align-items: center; gap: 8px; }
+    .fonte__nome { font-weight: 700; font-size: 14px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .fonte__host { font-size: 12px; color: var(--dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .fonte__badges { display: flex; flex-wrap: wrap; gap: 4px; }
+    .fonte__badges span { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 99px; background: var(--line); }
+    .fonte__badges .b-pub { background: #1f9d55; color: #fff; } .fonte__badges .b-ras { background: #d9a400; color: #1a1205; }
+    .fonte__badges .b-filtro { background: transparent; border: 1px solid var(--line); }
+    .fonte details > summary { list-style: none; cursor: pointer; font-size: 12px; color: var(--dim); }
+    .fonte details > summary::-webkit-details-marker { display: none; }
+    .fonte details[open] > summary { margin-bottom: 6px; }
+    .fonte__edit { display: grid; gap: 6px; }
+    .fonte .in { height: 36px; font-size: 13px; padding: 0 10px; width: 100%; }
+    .fonte__row { display: flex; gap: 6px; flex-wrap: wrap; }
+    .fonte__row > * { flex: 1 1 auto; }
+    .fonte__on { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+    .fonte__res { font-size: 12px; color: var(--dim); line-height: 1.5; }
     .fonte__res.is-ok { color: var(--text); } .fonte__res.is-err { color: #e5484d; }
     .fonte__res ul { margin: 4px 0 0 18px; }
-    @media (max-width: 720px) { .fonte__l2 { grid-template-columns: 1fr; } }
+    @media (max-width: 900px) { .kanban { grid-template-columns: repeat(4, 78vw); scroll-snap-type: x mandatory; } .kanban__col { scroll-snap-align: start; } }
     .st--desc { background: rgba(229,83,61,.12); color: #e5533d; }
     .ig { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 440px); gap: 22px; align-items: start; }
     .ig__prev { position: sticky; top: 86px; }
@@ -381,7 +401,10 @@
         <div class="f"><label>Texto do boi</label><input class="in" name="boi_info" placeholder="Ex.: Arroba do boi gordo · 26/11"></div>
         <div class="f"><label>Item extra (opcional)</label><input class="in" name="extra_valor" placeholder="Ex.: Gasolina R$ 7,49"></div>
         <div class="f"><label>Texto do item extra</label><input class="in" name="extra_info" placeholder="Ex.: Preço médio em Rio Branco"></div>
+        <div class="f"><label>Dólar</label><input class="in" name="dolar_valor" placeholder="Ex.: R$ 5,55"></div>
+        <div class="f"><label>Texto do dólar</label><input class="in" name="dolar_info" placeholder="Ex.: Dólar comercial"></div>
       </div>
+      <small style="display:block;margin-top:8px;color:var(--dim)">O robô atualiza rio, dólar, gasolina (item extra) e boi sozinho às 6h, 14h e 22h. Se você mudar aqui, vale até a próxima atualização.</small>
       <div class="p-save"><button class="btn btn--primary btn--sm">Salvar pulso</button><span class="msg"></span></div>
     </form>
 
@@ -598,11 +621,10 @@
     <div class="p-card" data-fontes>
       <h2>Fontes de notícias <small>de onde o robô tira as matérias · até 14 fontes</small></h2>
       <p class="fontes-ajuda">Cole o endereço do site ou do feed (RSS) e clique em <b>Testar</b>: o robô acha o feed sozinho e mostra as últimas notícias que ele vai ler.
-        <b>Tipo</b>: “Oficial” = governo e prefeituras (destaca o órgão) · “Portal” = sites de notícia · “Pauta geral” = assuntos de fora do Acre (tecnologia, ciência, curiosidades; no máximo 1 por rodada).
-        <b>Só se citar</b>: palavras separadas por vírgula; a notícia só entra se tiver alguma delas (útil para portais nacionais, ex.: “acre, rio branco”). <b>Ignorar</b>: pula títulos com essas palavras.</p>
-      <div data-fontes-lista><p class="empty">Carregando…</p></div>
+        Cada coluna é um tipo de fonte: <b>arraste o cartão</b> para outra coluna para mudar o tipo, e toque em <b>Editar</b> para trocar endereço, filtros e se publica direto.
+        Notícias estrangeiras e previsão do tempo de outros estados são descartadas antes da IA, sem gastar neurônios.</p>
+      <div class="kanban" data-fontes-lista><p class="empty">Carregando…</p></div>
       <div class="p-save">
-        <button type="button" class="btn btn--ghost btn--sm" data-fonte-add>+ Adicionar fonte</button>
         <button type="button" class="btn btn--ghost btn--sm" data-fontes-padrao>Voltar às fontes padrão</button>
         <button type="button" class="btn btn--primary btn--sm" data-fontes-salvar>Salvar fontes</button>
         <span class="msg" data-fontes-msg></span>
@@ -613,10 +635,14 @@
       <div class="p-save">
         <button type="button" class="btn btn--primary btn--sm" data-robo-rodar>Rodar agora</button>
         <button type="button" class="btn btn--ghost btn--sm" data-robo-fotos>Trocar imagens de IA por fotos reais</button>
+        <button type="button" class="btn btn--ghost btn--sm" data-robo-pulso>Atualizar pulso agora</button>
         <button type="button" class="btn btn--ghost btn--sm" data-robo-telegram>Conectar meu Telegram</button>
+        <button type="button" class="btn btn--ghost btn--sm" data-robo-canal>Conectar canal do Telegram</button>
         <span class="msg" data-robo-msg></span>
       </div>
-      <small style="display:block;margin-top:10px;color:var(--dim)">Para o Telegram: abra o seu robô no Telegram, mande um “oi” para ele e depois clique em “Conectar meu Telegram”.</small>
+      <small style="display:block;margin-top:10px;color:var(--dim);line-height:1.6"><b>Meu Telegram</b> (avisos só para você): abra o seu robô no Telegram, mande um “oi” e clique em “Conectar meu Telegram”.<br>
+        <b>Canal do Telegram</b> (público, para os leitores): crie o canal, adicione o robô como <b>administrador</b>, publique uma mensagem qualquer no canal e clique em “Conectar canal do Telegram”. Toda notícia publicada vai para lá com foto e link.<br>
+        <b>Pulso</b> (rio, dólar, gasolina e boi): o robô atualiza sozinho às 6h, 14h e 22h.</small>
     </div>
     <div class="p-card">
       <h2>O que o robô leu por último</h2>
@@ -633,8 +659,8 @@
   </main>
 </div>
 
-<script src="assets/js/config.js?v=15"></script>
-<script src="assets/js/dados.js?v=15"></script>
+<script src="assets/js/config.js?v=16"></script>
+<script src="assets/js/dados.js?v=16"></script>
 <script>
 (function () {
   const { api, modo, util } = window.O68;
@@ -803,11 +829,13 @@
     if (acao === 'publicado' && !fotoUrl && !confirm('Esta notícia está sem foto. Publicar mesmo assim? (Sem foto, a capa usa um fundo ilustrativo.)')) return;
     if (acao === 'publicado' && atual && atual.status !== 'publicado') n.publicado_em = null; // publica agora
     $$('[data-acao]').forEach(b => b.disabled = true); msg(acao === 'publicado' ? 'Publicando…' : 'Salvando…');
+    const estreia = acao === 'publicado' && (!atual || atual.status !== 'publicado');
     try {
       await api.salvar(n); sujo = false;
       await carregar();
       const salvo = lista.find(x => x.slug === n.slug);
       if (salvo) abrir(salvo);
+      if (estreia && salvo && window.O68.divulgarTelegram) window.O68.divulgarTelegram(salvo.id); // vai para o canal do Telegram
       msg(acao === 'publicado' ? 'Publicada! Já aparece no site.' : 'Rascunho salvo.', 'ok');
     } catch (err) { msg(err.message, 'err'); }
     finally { $$('[data-acao]').forEach(b => b.disabled = false); }
@@ -822,9 +850,9 @@
   iniciar();
 })();
 </script>
-<script src="assets/js/painel-site.js?v=15"></script>
-<script src="assets/js/painel-extra.js?v=15"></script>
-<script src="assets/js/painel-dash.js?v=15"></script>
+<script src="assets/js/painel-site.js?v=16"></script>
+<script src="assets/js/painel-extra.js?v=16"></script>
+<script src="assets/js/painel-dash.js?v=16"></script>
 <script src="assets/js/painel-insta.js?v=16"></script>
 </body>
 </html>

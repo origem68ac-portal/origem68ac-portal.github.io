@@ -23,7 +23,7 @@
 
   let todas = [], lidas = [];
   try {
-    [todas, lidas] = await Promise.all([api.publicadas(40), api.maisLidas(4)]);
+    [todas, lidas] = await Promise.all([api.publicadas(50), api.maisLidas(5)]);
     try { localStorage.setItem(CK, JSON.stringify({ t: Date.now(), todas: todas.map(({ corpo, ...n }) => ({ ...n, corpo: String(corpo || '').slice(0, 1200) })), lidas })); } catch (_) {}
   } catch (e) {
     console.error(e);
@@ -39,7 +39,7 @@
     if (document.hidden || checando) return;
     checando = true;
     try {
-      const [t, l] = await Promise.all([api.publicadas(40), api.maisLidas(4)]);
+      const [t, l] = await Promise.all([api.publicadas(50), api.maisLidas(5)]);
       const nova = assinatura(t, l);
       if (nova !== atual) {
         atual = nova; todas = t; lidas = l; desenhar(t, l); montarSecoes();
@@ -89,8 +89,8 @@
     <div class="meta"><span>${esc(n.editoria)}</span><span>${tempoRelativo(n.publicado_em)}</span></div>`);
 
   const resto = todas.filter(n => !usados.has(n));
-  naCapa = new Set([...usados, ...resto.slice(0, 11)].map(n => n.id)); // não se repetem nas seções abaixo
-  for (let i = 1; i <= 11; i++) {
+  naCapa = new Set([...usados, ...resto.slice(0, 15)].map(n => n.id)); // não se repetem nas seções abaixo
+  for (let i = 1; i <= 15; i++) {
     const n = resto[i - 1], el = document.querySelector(`[data-card="u${i}"]`);
     if (!el) continue;
     if (el.classList.contains('card--row')) {
@@ -109,7 +109,7 @@
 
   // Mais lidas (se ainda não há leituras, mostra as mais recentes)
   const ol = $('[data-mais-lidas]');
-  const listaLidas = lidas.length ? lidas : todas.slice(0, 4);
+  const listaLidas = lidas.length ? lidas : todas.slice(0, 5);
   if (ol) {
     ol.innerHTML = listaLidas.map(n => `<li><div><a href="${link(n)}">${esc(n.titulo)}</a><small>${esc(n.editoria)}</small></div></li>`).join('');
     ol.closest('.mostread').hidden = !listaLidas.length;
@@ -138,13 +138,26 @@
     const PADRAO = ['Rio Branco', 'Interior', 'Política', 'Economia', 'Saúde', 'Educação', 'Amazônia', 'Cidades', 'Esporte', 'Cultura', 'Negócios', 'Brasil', 'Tecnologia', 'Curiosidades', 'Segurança'];
     const ordem = escolhidas.length ? escolhidas : PADRAO;
     const vistos = new Set(naCapa);
+    // Esporte Acreano: seção própria, em destaque, logo depois das últimas
+    const boxEsp = $('[data-esporte-acre]');
+    if (boxEsp) {
+      const esp = lista.filter(n => n.editoria === 'Esporte Acreano').slice(0, 4);
+      esp.forEach(n => vistos.add(n.id));
+      boxEsp.innerHTML = esp.length ? `<section class="esporte-acre"><div class="wrap"><div class="esporte-acre__box">
+        <div class="esporte-acre__faixa"><i></i><i></i></div>
+        <div class="section__head secao-ed__head"><div><div class="eyebrow">Da nossa terra</div><h2 class="h-section">Esporte <em>acreano</em></h2></div>
+        <a href="lista.html?editoria=${encodeURIComponent('Esporte Acreano')}" class="link-more">Mais do esporte acreano <svg><use href="#i-arrow"/></svg></a></div>
+        <div class="grid-news">${esp.map(n => `<a href="${link(n)}" class="card col-3">${fotoHTML(n)}<h3>${esc(n.titulo)}</h3>${quando(n)}</a>`).join('')}</div>
+      </div></div></section>` : '';
+    }
     const secoes = [];
     for (const ed of ordem) {
+      if (ed === 'Esporte Acreano') continue;
       const itens = lista.filter(n => n.editoria === ed && !vistos.has(n.id)).slice(0, 5);
       if (itens.length < 2) continue;
       itens.forEach(n => vistos.add(n.id));
       secoes.push(secaoHTML(ed, itens, secoes.length));
-      if (secoes.length >= 10) break;
+      if (secoes.length >= 14) break;
     }
     box1.innerHTML = secoes.slice(0, 3).join('');
     box2.innerHTML = secoes.slice(3).join('');
@@ -160,7 +173,7 @@
           fila = fila.concat(ex.filter(n => !vistos.has(n.id)));
         } catch (_) { acabou = true; }
       }
-      const lote = fila.splice(0, 12);
+      const lote = fila.splice(0, 16);
       lote.forEach(n => vistos.add(n.id));
       mais.insertAdjacentHTML('beforeend', lote.map(cardMais).join(''));
       btn.hidden = !fila.length && acabou;
@@ -200,6 +213,7 @@
       if (p.rio_nivel) itens.push(item('drop', p.rio_nivel, p.rio_info || 'Rio Acre em Rio Branco'));
       if (p.boi_valor) itens.push(item('coin', p.boi_valor, p.boi_info || 'Arroba do boi'));
       if (p.extra_valor) itens.push(item('bus', p.extra_valor, p.extra_info || ''));
+      if (p.dolar_valor) itens.push(item('coin', p.dolar_valor, p.dolar_info || 'Dólar comercial'));
       pulso.innerHTML = itens.join('');
       pulso.style.setProperty('--n', Math.max(1, itens.length));
       pulso.hidden = !itens.length;

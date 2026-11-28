@@ -153,38 +153,83 @@
 
   /* ---------- fontes do robô (bloco "robo_fontes") ---------- */
   let fontesCarregadas = false;
-  const TIPOS = [['oficial', 'Oficial'], ['portal', 'Portal'], ['geral', 'Pauta geral']];
+  const TIPOS = [['oficial', 'Oficial'], ['portal', 'Portal'], ['nacional', 'Nacional'], ['geral', 'Pauta geral']];
+  const DESC_TIPO = { oficial: 'Governo e prefeituras', portal: 'Sites de notícia do Acre', nacional: 'Brasil: economia, política, esporte', geral: 'Tecnologia, ciência, curiosidades' };
   const opt = (lista, v) => lista.map(([val, txt]) => `<option value="${val}"${val === v ? ' selected' : ''}>${txt}</option>`).join('');
-  function linhaFonte(f = {}) {
+  const hostDe = u => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch (_) { return u || 'sem endereço'; } };
+  // cartão de uma fonte: resumo visível + detalhes para editar
+  function linhaFonte(f = {}, aberto = false) {
     const el = document.createElement('div');
     const tipo = f.tipo || 'portal';
     const pub = f.publicar || (tipo === 'oficial' ? 'sim' : 'nao');
     el.className = 'fonte' + (f.ativo === 'nao' ? ' is-off' : '');
+    el.draggable = true;
     el.innerHTML = `
-      <div class="fonte__l1">
-        <label class="fonte__on"><input type="checkbox" data-k="ativo" ${f.ativo === 'nao' ? '' : 'checked'}> Ativa</label>
-        <input class="in" data-k="nome" placeholder="Nome (aparece no crédito)" value="${util.esc(f.nome || '')}">
-        <input class="in fonte__url" data-k="url" placeholder="https://site.com.br ou endereço do feed" value="${util.esc(f.url || '')}">
-        <select class="in" data-k="tipo" title="Tipo">${opt(TIPOS, tipo)}</select>
-        <select class="in" data-k="publicar" title="O que fazer com as matérias">${opt([['sim', 'Publicar direto'], ['nao', 'Virar rascunho']], pub)}</select>
-        <select class="in" data-k="fotos" title="Fotos">${opt([['sim', 'Usar a foto'], ['nao', 'Sem foto (IA)']], f.fotos === 'nao' ? 'nao' : 'sim')}</select>
-        <button type="button" class="btn btn--ghost btn--sm" data-fonte-testar>Testar</button>
-        <button type="button" class="btn btn--danger btn--sm" data-fonte-tirar title="Remover">✕</button>
+      <div class="fonte__top">
+        <label class="fonte__on" title="Ligar/desligar"><input type="checkbox" data-k="ativo" ${f.ativo === 'nao' ? '' : 'checked'}></label>
+        <span class="fonte__nome" data-ver-nome>${util.esc(f.nome || 'Nova fonte')}</span>
       </div>
-      <div class="fonte__l2">
-        <input class="in" data-k="exigir" placeholder="Só se citar (opcional): acre, rio branco, cruzeiro do sul…" value="${util.esc(f.exigir || '')}">
-        <input class="in" data-k="ignorar" placeholder="Ignorar títulos com (opcional): ao vivo, vídeo, quiz…" value="${util.esc(f.ignorar || '')}">
-      </div>
+      <div class="fonte__host" data-ver-host>${util.esc(hostDe(f.url))}</div>
+      <div class="fonte__badges" data-ver-badges></div>
+      <details ${aberto ? 'open' : ''}><summary>✎ Editar</summary>
+        <div class="fonte__edit">
+          <input class="in" data-k="nome" placeholder="Nome (aparece no crédito)" value="${util.esc(f.nome || '')}">
+          <input class="in" data-k="url" placeholder="https://site.com.br ou endereço do feed" value="${util.esc(f.url || '')}">
+          <div class="fonte__row">
+            <select class="in" data-k="tipo" title="Tipo">${opt(TIPOS, tipo)}</select>
+            <select class="in" data-k="publicar" title="O que fazer com as matérias">${opt([['sim', 'Publicar direto'], ['nao', 'Virar rascunho']], pub)}</select>
+            <select class="in" data-k="fotos" title="Fotos">${opt([['sim', 'Usar a foto'], ['nao', 'Sem foto (IA)']], f.fotos === 'nao' ? 'nao' : 'sim')}</select>
+          </div>
+          <input class="in" data-k="exigir" placeholder="Só se citar: acre, rio branco…" value="${util.esc(f.exigir || '')}">
+          <input class="in" data-k="ignorar" placeholder="Ignorar títulos com: ao vivo, vídeo…" value="${util.esc(f.ignorar || '')}">
+          <div class="fonte__row">
+            <button type="button" class="btn btn--ghost btn--sm" data-fonte-testar>Testar</button>
+            <button type="button" class="btn btn--danger btn--sm" data-fonte-tirar>Remover</button>
+          </div>
+        </div>
+      </details>
       <div class="fonte__res" data-fonte-res></div>`;
+    resumoFonte(el);
     return el;
+  }
+  function resumoFonte(el) {
+    const f = lerFonte(el);
+    $('[data-ver-nome]', el).textContent = f.nome || hostDe(f.url) || 'Nova fonte';
+    $('[data-ver-host]', el).textContent = hostDe(f.url);
+    $('[data-ver-badges]', el).innerHTML = [
+      f.publicar === 'sim' ? '<span class="b-pub">Publica direto</span>' : '<span class="b-ras">Rascunho</span>',
+      f.fotos === 'nao' ? '<span>Imagem IA</span>' : '<span>Foto real</span>',
+      f.exigir ? '<span class="b-filtro">Só se citar</span>' : '', f.ignorar ? '<span class="b-filtro">Ignora termos</span>' : ''
+    ].join('');
+    el.classList.toggle('is-off', f.ativo === 'nao');
   }
   const listaFontes = () => $('[data-fontes-lista]');
   const fontesMsg = (t, tipo) => { const m = $('[data-fontes-msg]'); m.textContent = t; m.className = 'msg' + (tipo ? ' is-' + tipo : ''); };
+  const colunaDe = tipo => $(`.kanban__col[data-tipo="${tipo}"] [data-cards]`, listaFontes());
+  function contar() { $$('.kanban__col', listaFontes()).forEach(c => { $('.kanban__n', c).textContent = $$('.fonte', c).length; }); }
   function desenharFontes(lista) {
-    const box = listaFontes(); box.innerHTML = '';
-    lista.forEach(f => box.appendChild(linhaFonte(f)));
-    if (!lista.length) box.innerHTML = '<p class="empty">Nenhuma fonte. Adicione pelo menos uma.</p>';
+    const box = listaFontes();
+    box.innerHTML = TIPOS.map(([t, nome]) => `<div class="kanban__col" data-tipo="${t}">
+      <div class="kanban__head"><b>${nome}<small>${DESC_TIPO[t]}</small></b><span class="kanban__n">0</span></div>
+      <div data-cards style="display:grid;gap:8px"></div>
+      <button type="button" class="kanban__add" data-fonte-add="${t}">+ Adicionar</button></div>`).join('');
+    lista.forEach(f => (colunaDe(TIPOS.some(([t]) => t === f.tipo) ? f.tipo : 'portal')).appendChild(linhaFonte(f)));
+    contar();
   }
+  // arrastar cartões entre colunas muda o tipo
+  let arrastando = null;
+  listaFontes().addEventListener('dragstart', e => { const c = e.target.closest && e.target.closest('.fonte'); if (!c || /INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return; arrastando = c; c.classList.add('is-arrastando'); e.dataTransfer.effectAllowed = 'move'; });
+  listaFontes().addEventListener('dragend', () => { if (arrastando) arrastando.classList.remove('is-arrastando'); arrastando = null; $$('.kanban__col', listaFontes()).forEach(c => c.classList.remove('is-alvo')); });
+  listaFontes().addEventListener('dragover', e => { const col = e.target.closest('.kanban__col'); if (!col || !arrastando) return; e.preventDefault(); $$('.kanban__col', listaFontes()).forEach(c => c.classList.toggle('is-alvo', c === col)); });
+  listaFontes().addEventListener('drop', e => {
+    const col = e.target.closest('.kanban__col'); if (!col || !arrastando) return; e.preventDefault();
+    const antes = e.target.closest('.fonte');
+    const cards = $('[data-cards]', col);
+    if (antes && antes !== arrastando && antes.parentElement === cards) cards.insertBefore(arrastando, antes); else cards.appendChild(arrastando);
+    const sel = $('[data-k="tipo"]', arrastando);
+    if (sel.value !== col.dataset.tipo) { sel.value = col.dataset.tipo; fontesMsg('Tipo alterado. Clique em “Salvar fontes” para valer.'); }
+    contar();
+  });
   async function fontesPadrao() {
     const base = ((window.O68_CONFIG || {}).roboUrl || '').replace(/\/$/, '');
     const d = await (await fetch(base + '/fontes-padrao')).json();
@@ -200,19 +245,25 @@
     } catch (e) { fontesCarregadas = false; listaFontes().innerHTML = `<p class="empty">${util.esc(e.message)}</p>`; }
   }
   const lerFonte = el => Object.fromEntries($$('[data-k]', el).map(i => [i.dataset.k, i.type === 'checkbox' ? (i.checked ? 'sim' : 'nao') : i.value.trim()]));
-  $('[data-fonte-add]').addEventListener('click', () => {
-    const box = listaFontes(); $('.empty', box)?.remove();
-    if ($$('.fonte', box).length >= 14) return fontesMsg('O limite é de 14 fontes (plano grátis). Desative ou remova uma.', 'err');
-    const el = linhaFonte({}); box.appendChild(el); $('[data-k="url"]', el).focus();
-  });
   $('[data-fontes-padrao]').addEventListener('click', async () => {
     if (!confirm('Trocar a lista atual pelas fontes padrão? (Só vale depois de clicar em “Salvar fontes”.)')) return;
     try { desenharFontes(await fontesPadrao()); fontesMsg('Fontes padrão carregadas. Clique em “Salvar fontes” para valer.'); } catch (e) { fontesMsg(e.message, 'err'); }
   });
-  listaFontes().addEventListener('change', e => { if (e.target.dataset.k === 'ativo') e.target.closest('.fonte').classList.toggle('is-off', !e.target.checked); });
-  listaFontes().addEventListener('click', async e => {
+  listaFontes().addEventListener('change', e => {
     const el = e.target.closest('.fonte'); if (!el) return;
-    if (e.target.closest('[data-fonte-tirar]')) { el.remove(); fontesMsg('Fonte removida. Clique em “Salvar fontes” para valer.'); return; }
+    if (e.target.dataset.k === 'tipo') { colunaDe(e.target.value).appendChild(el); contar(); }
+    resumoFonte(el);
+  });
+  listaFontes().addEventListener('input', e => { const el = e.target.closest('.fonte'); if (el && /nome|url/.test(e.target.dataset.k || '')) resumoFonte(el); });
+  listaFontes().addEventListener('click', async e => {
+    const add = e.target.closest('[data-fonte-add]');
+    if (add) {
+      if ($$('.fonte', listaFontes()).length >= 14) return fontesMsg('O limite é de 14 fontes (plano grátis). Desative ou remova uma.', 'err');
+      const el = linhaFonte({ tipo: add.dataset.fonteAdd }, true); colunaDe(add.dataset.fonteAdd).appendChild(el); contar(); $('[data-k="url"]', el).focus();
+      return;
+    }
+    const el = e.target.closest('.fonte'); if (!el) return;
+    if (e.target.closest('[data-fonte-tirar]')) { el.remove(); contar(); fontesMsg('Fonte removida. Clique em “Salvar fontes” para valer.'); return; }
     const bt = e.target.closest('[data-fonte-testar]'); if (!bt) return;
     const f = lerFonte(el), res = $('[data-fonte-res]', el);
     if (!/^https?:\/\//.test(f.url)) { res.className = 'fonte__res is-err'; res.textContent = 'Cole o endereço completo, começando com https://'; return; }
@@ -221,6 +272,7 @@
       const d = await comandoRobo('/fonte-teste', f);
       $('[data-k="url"]', el).value = d.feed;
       if (!f.nome && d.nome) $('[data-k="nome"]', el).value = d.nome;
+      resumoFonte(el);
       res.className = 'fonte__res is-ok';
       res.innerHTML = `✓ Feed encontrado: ${d.total} notícias recentes, ${d.comFoto} com foto${d.passam !== d.total ? ` · ${d.passam} passam pelos filtros “só se citar/ignorar”` : ''}.`
         + (d.exemplos.length ? `<ul>${d.exemplos.map(x => `<li>${util.esc(x.titulo)}</li>`).join('')}</ul>` : '') + ' Lembre de clicar em “Salvar fontes”.';
@@ -266,6 +318,21 @@
     } catch (err) { roboMsg(err.message, 'err'); }
     finally { e.target.disabled = false; }
   });
+  $('[data-robo-canal]').addEventListener('click', async () => {
+    roboMsg('Procurando o canal/grupo…');
+    try { const d = await comandoRobo('/telegram-canal'); roboMsg(`Canal conectado${d.nome ? ' (' + d.nome + ')' : ''}! As próximas notícias publicadas vão aparecer lá.`, 'ok'); }
+    catch (err) { roboMsg(err.message, 'err'); }
+  });
+  $('[data-robo-pulso]').addEventListener('click', async e => {
+    e.target.disabled = true; roboMsg('Pesquisando rio, dólar, gasolina e boi… (até 30 segundos)');
+    try {
+      const d = await comandoRobo('/pulso'); const p = d.pulso || {};
+      roboMsg(`Pulso atualizado (${(d.atualizados || []).join(', ') || 'nada novo'}): rio ${p.rio_nivel || '—'} · dólar ${p.dolar_valor || '—'} · gasolina ${p.extra_valor || '—'} · boi ${p.boi_valor || '—'}.`, 'ok');
+      blocos = null;
+    } catch (err) { roboMsg(err.message, 'err'); }
+    finally { e.target.disabled = false; }
+  });
+  window.O68.divulgarTelegram = id => comandoRobo('/divulgar', { id }).catch(() => null);
   $('[data-robo-telegram]').addEventListener('click', async () => {
     roboMsg('Conectando…');
     try { const d = await comandoRobo('/telegram'); roboMsg(`Telegram conectado${d.nome ? ' (' + d.nome + ')' : ''}. Veja a mensagem de teste.`, 'ok'); }

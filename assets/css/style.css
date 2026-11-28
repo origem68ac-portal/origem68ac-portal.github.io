@@ -328,6 +328,27 @@ html { overflow-x: clip; }
 .mais__fim .btn[hidden] { display: none; }
 .stack .card--row:first-child { border-top: 0; padding-top: 0; }
 
+/* capa mais compacta: cabe mais notícia na tela */
+.section { padding: clamp(32px, 4.5vw, 64px) 0; }
+.lead { min-height: 520px; }
+.grid-news { gap: 18px; }
+.card { gap: 10px; }
+.card h3 { font-size: 18px; }
+.ultimas-esq .card h3 { font-size: 15.5px; line-height: 1.22; }
+.ultimas-esq .card .meta { font-size: 11.5px; }
+.card--row { padding: 11px 0; gap: 12px; }
+.card--row .ph { width: 96px; }
+.card--row h3 { font-size: 15px; }
+.mais-grid { row-gap: 24px; }
+
+/* Esporte Acreano: seção de destaque com as cores do Acre */
+.esporte-acre { position: relative; padding: clamp(28px, 4vw, 48px) 0; }
+.esporte-acre__box { border-radius: var(--radius); padding: clamp(18px, 3vw, 32px); background: linear-gradient(135deg, rgba(0,146,63,.16), rgba(252,209,22,.10) 55%, rgba(206,17,38,.10)); border: 1px solid rgba(0,146,63,.35); }
+.esporte-acre .eyebrow { color: #1fae5b; }
+.esporte-acre .h-section em { color: #d4a900; }
+.esporte-acre__faixa { display: flex; height: 5px; border-radius: 5px; overflow: hidden; margin-bottom: 14px; width: 120px; }
+.esporte-acre__faixa i { flex: 1; } .esporte-acre__faixa i:nth-child(1) { background: #FCD116; } .esporte-acre__faixa i:nth-child(2) { background: #00923F; }
+
 /* ---------- Bloco Amazônia (cream + laranja) ---------- */
 .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
 .tile { border-radius: var(--radius); padding: 24px; min-height: 280px; display: flex; flex-direction: column; justify-content: space-between; position: relative; transition: transform .3s; }
@@ -472,6 +493,43 @@ html { overflow-x: clip; }
 @media (max-width: 1024px) { .ofertas-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 720px) { .ofertas-grid { grid-template-columns: 1fr 1fr; gap: 12px; } .oferta__corpo { padding: 12px; } .oferta__corpo h3 { font-size: 14.5px; } .oferta__preco b { font-size: 18px; } .oferta__btn { font-size: 12.5px; } }
 
+/* ---------- stories das ofertas ---------- */
+.story-bola { position: fixed; right: 18px; bottom: 22px; z-index: 80; display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: 0; padding: 0; cursor: pointer; transform: scale(.4); opacity: 0; transition: transform .45s cubic-bezier(.2,1.4,.4,1), opacity .3s; font: inherit; }
+.story-bola.is-on { transform: scale(1); opacity: 1; }
+.story-bola__anel { width: 72px; height: 72px; border-radius: 50%; padding: 3px; background: conic-gradient(from 0deg, #FBB931, #FF5D0A, #E1306C, #833AB4, #FF5D0A, #FBB931); animation: story-gira 4s linear infinite; box-shadow: 0 8px 24px rgba(0,0,0,.35); }
+.story-bola__anel img { display: block; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid var(--bg); background: #fff; animation: story-gira 4s linear infinite reverse; }
+.story-bola.is-vista .story-bola__anel { background: var(--line); animation: none; }
+.story-bola.is-vista .story-bola__anel img { animation: none; }
+.story-bola__txt { font-size: 11.5px; font-weight: 700; color: var(--text); background: var(--bg); padding: 2px 9px; border-radius: 99px; box-shadow: 0 2px 8px rgba(0,0,0,.25); }
+.story-bola__n { position: absolute; top: -2px; right: -2px; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 99px; background: #E5484D; color: #fff; font-size: 12px; font-weight: 800; display: grid; place-items: center; border: 2px solid var(--bg); }
+@keyframes story-gira { to { transform: rotate(360deg); } }
+.story-bola { z-index: 55; }
+@media (max-width: 900px) { .story-bola { right: 12px; bottom: 84px; } .story-bola__anel { width: 60px; height: 60px; } }
+@media (prefers-reduced-motion: reduce) { .story-bola__anel, .story-bola__anel img { animation: none; } }
+html.story-aberto { overflow: hidden; }
+.story { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,.88); display: grid; place-items: center; animation: story-entra .25s ease; }
+@keyframes story-entra { from { opacity: 0; } }
+.story__box { position: relative; width: min(420px, 100vw); height: min(780px, 100dvh); background: #120c09; color: #FFF6EA; border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; user-select: none; }
+@media (max-width: 480px) { .story__box { border-radius: 0; } }
+.story__box::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 86px; background: linear-gradient(rgba(0,0,0,.55), transparent); z-index: 2; pointer-events: none; }
+.story__barras { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; gap: 4px; z-index: 3; }
+.story__barras span { flex: 1; height: 3px; border-radius: 3px; background: rgba(255,255,255,.3); overflow: hidden; }
+.story__barras i { display: block; height: 100%; width: 0; background: #fff; }
+.story__topo { position: absolute; top: 20px; left: 14px; right: 8px; display: flex; align-items: center; justify-content: space-between; z-index: 3; font-size: 13px; text-shadow: 0 1px 4px rgba(0,0,0,.6); }
+.story__fechar { background: none; border: 0; color: #fff; font-size: 22px; padding: 6px 10px; cursor: pointer; }
+.story__conteudo { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.story__foto { flex: 1; min-height: 0; background: #fff; display: grid; place-items: center; }
+.story__foto img { width: 100%; height: 100%; object-fit: contain; }
+.story__info { padding: 16px 18px 18px; display: grid; gap: 8px; background: linear-gradient(180deg, #1c130e, #120c09); position: relative; z-index: 3; }
+.story__loja { justify-self: start; font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #FBB931; }
+.story__info h3 { font-size: 17px; line-height: 1.25; font-weight: 650; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.story__preco { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.story__preco s { color: #a8998a; font-size: 14px; } .story__preco b { font-size: 24px; } .story__preco em { font-style: normal; font-weight: 800; font-size: 13px; background: #1f9d55; color: #fff; padding: 2px 8px; border-radius: 99px; }
+.story__cta { display: block; text-align: center; padding: 14px; border-radius: 14px; font-weight: 800; color: #1a1205; background: linear-gradient(135deg, #FF5D0A, #FBB931); }
+.story__info small { font-size: 11.5px; color: #a8998a; text-align: center; } .story__info small a { text-decoration: underline; }
+.story__nav { position: absolute; top: 60px; bottom: 210px; width: 35%; background: none; border: 0; z-index: 2; cursor: pointer; }
+.story__nav--ant { left: 0; } .story__nav--prox { right: 0; width: 65%; }
+
 .article-foto { margin: 28px 0; }
 .article-foto img { display: block; width: 100%; height: auto; max-height: 560px; object-fit: cover; border-radius: 16px; background: var(--line); }
 .article-foto figcaption { margin-top: 8px; font-size: 13px; color: var(--dim); }
@@ -542,6 +600,9 @@ html { overflow-x: clip; }
   .pulse { grid-template-columns: 1fr; }
   .pulse__item + .pulse__item { border-left: 0; border-top: 1px solid var(--line); }
   .col-4, .col-6 { grid-column: span 12; }
+  .ultimas-esq .col-4, .esporte-acre .col-3 { grid-column: span 6; }
+  .ultimas-esq .card__tag { display: none; }
+  .ultimas-esq .card h3 { font-size: 14.5px; }
   .grid-news.mais-grid, .secao-ed .grid-news { gap: 14px; row-gap: 22px; }
   .secao-ed .col-3 h3, .mais-grid h3 { font-size: 15px; }
   .mais-grid .meta, .secao-ed .col-3 .meta { font-size: 11.5px; }
